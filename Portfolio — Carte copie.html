@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portfolio — Carte</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--ink:#e9ece9;--dim:#9aa19a;--line:#ffffff48;--acc:#6fe05a;--hh:56px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{min-height:100%;overflow-x:clip;overflow-y:auto;scroll-behavior:auto}
+body{min-height:100%;margin:0;background:#000;color:var(--ink);font:13px/1.5 'IBM Plex Mono',ui-monospace,Menlo,monospace;overflow-x:clip;overflow-y:visible}
+header{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:var(--hh);z-index:5;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;background:#000c;border-bottom:1px solid var(--line)}
+.logo{font-weight:600;letter-spacing:.15em;white-space:nowrap;cursor:pointer}.logo i{color:var(--acc);font-style:normal}
+nav{display:flex;align-items:center}
+#menu-toggle{display:flex;align-items:center;gap:14px;font:inherit;font-size:10px;letter-spacing:.16em;color:var(--ink);background:transparent;border:1px solid #ffffff38;padding:8px 11px;cursor:pointer;text-transform:uppercase;transition:color .2s,border-color .2s}
+#menu-toggle:hover,#menu-toggle[aria-expanded="true"]{color:var(--ink);border-color:#ffffff78}
+.menu-toggle-mark{position:relative;display:block;width:18px;height:10px;border-top:1px solid currentColor;border-bottom:1px solid currentColor;transition:transform .25s}
+#menu-toggle[aria-expanded="true"] .menu-toggle-mark{transform:rotate(45deg);border-bottom-color:transparent}
+#site-menu{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;padding:clamp(20px,4vw,54px);overflow:auto;background:radial-gradient(ellipse at 68% 45%,#101a13 0%,#070a08 58%,#030504 100%);color:var(--ink);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .32s cubic-bezier(.2,.8,.2,1),visibility 0s linear .32s}
+#site-menu::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 9.9vw,#e5eee508 10vw),repeating-linear-gradient(0deg,transparent 0 9.9vh,#e5eee506 10vh);opacity:.48}
+#site-menu.open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .32s cubic-bezier(.2,.8,.2,1),visibility 0s}
+.site-menu-top{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:20px;padding-bottom:14px;border-bottom:1px solid #ffffff32;color:#9aa19a;font-size:9px;letter-spacing:.15em;text-transform:uppercase}
+.site-menu-top b{color:var(--ink);font-weight:400}.site-menu-close{font:inherit;color:var(--ink);background:none;border:0;cursor:pointer;font-size:10px;letter-spacing:.14em}
+.site-menu-close:hover{color:var(--ink)}.site-menu-close span{margin-left:12px;color:var(--acc);font-size:18px;vertical-align:-1px}
+.site-menu-layout{position:relative;z-index:1;display:grid;grid-template-columns:minmax(130px,.55fr) minmax(0,1.7fr);align-items:center;gap:clamp(28px,8vw,120px);width:min(100%,1420px);flex:1;margin:auto}
+.site-menu-aside{align-self:center;color:#8b968d;font-size:9px;letter-spacing:.14em;line-height:1.8;text-transform:uppercase}
+.site-menu-aside strong{display:block;margin-top:16px;color:var(--acc);font-weight:400}
+.site-menu-links{display:flex;flex-direction:column;align-items:stretch;width:100%;min-width:0}
+.site-menu-link{width:100%;display:grid;grid-template-columns:46px minmax(0,1fr) 34px;align-items:center;gap:12px;padding:clamp(10px,1.65vh,18px) 0;border:0;border-bottom:1px solid #ffffff25;background:none;color:var(--ink);text-align:left;cursor:pointer}
+.site-menu-link:hover .menu-word{color:#fff}.site-menu-link:hover .menu-arrow{transform:translateX(5px);color:var(--acc)}
+.menu-index{align-self:center;color:#89938a;font-size:9px;letter-spacing:.12em}
+.menu-word{display:block;min-width:0;font-size:clamp(38px,7.5vw,104px);font-weight:400;line-height:.95;letter-spacing:-.075em;text-transform:uppercase;white-space:nowrap;transition:color .2s}
+.menu-letter{position:relative;display:inline-block;opacity:0;filter:blur(4px);transform:translateX(var(--drift-start,24px));will-change:transform,opacity,filter}
+.menu-letter-space{white-space:pre}
+.menu-letter::before,.menu-letter::after{content:attr(data-letter);position:absolute;inset:0;pointer-events:none;opacity:0}
+.menu-letter::before{color:var(--acc)}.menu-letter::after{color:#dce5dc}
+#site-menu.open .menu-letter{animation:menuTextResolve .78s cubic-bezier(.2,.8,.2,1) var(--menu-delay,0ms) both}
+#site-menu.open .menu-letter::before{animation:menuEchoResolve .58s steps(1,end) var(--menu-delay,0ms) both}
+#site-menu.open .menu-letter::after{animation:menuEchoResolve .62s steps(1,end) calc(var(--menu-delay,0ms) + 35ms) both}
+.menu-arrow{justify-self:end;color:#849084;font-size:clamp(16px,2vw,24px);transition:transform .22s,color .22s}
+.directional-hover{position:relative;isolation:isolate}
+.directional-hover::before{content:"";position:absolute;z-index:-1;inset:1px;pointer-events:none;background:linear-gradient(105deg,#6fe05a0a,#6fe05a18);transform:scaleX(0);transform-origin:left center;transition:transform .42s cubic-bezier(.2,.8,.2,1)}
+.directional-hover[data-enter="right"]::before{transform-origin:right center}
+.directional-hover[data-enter="top"]::before,.directional-hover[data-enter="bottom"]::before{transform:scaleY(0);transform-origin:center top}
+.directional-hover[data-enter="bottom"]::before{transform-origin:center bottom}
+.directional-hover.is-hovered::before{transform:scaleX(1)}
+.directional-hover.is-hovered[data-enter="top"]::before,.directional-hover.is-hovered[data-enter="bottom"]::before{transform:scaleY(1)}
+.directional-hover:focus-visible::before{transform:scaleX(1)}
+.menu-project-subnav{display:grid;width:100%;grid-template-columns:repeat(3,1fr);gap:8px;max-height:0;overflow:hidden;opacity:0;transition:max-height .38s cubic-bezier(.2,.8,.2,1),opacity .25s,padding .3s}
+#site-menu.projects-expanded .menu-project-subnav{max-height:90px;padding:12px 0 16px;opacity:1}
+.menu-project-subnav button{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #ffffff2e;background:#ffffff05;color:#cbd4cb;font:inherit;font-size:9px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer}
+.menu-project-subnav button:hover{border-color:#ffffff78;color:#f1f4f0}
+.menu-project-subnav small{color:#879187;font-size:8px}
+@keyframes menuTextResolve{0%{opacity:0;filter:blur(5px);transform:translateX(var(--drift-start,24px))}18%{opacity:.95;filter:blur(1.5px);transform:translateX(var(--drift-mid,-6px))}36%{opacity:.28;filter:blur(2px);transform:translateX(5px)}58%{opacity:1;filter:blur(0);transform:translateX(0)}100%{opacity:1;filter:none;transform:none}}
+@keyframes menuEchoResolve{0%{opacity:.72;transform:translateX(var(--echo-start,12px))}24%{opacity:.48;transform:translateX(var(--echo-mid,-5px))}48%{opacity:.18;transform:translateX(2px)}76%,100%{opacity:0;transform:translateX(0)}}
+@media(max-width:700px){#site-menu{padding:18px}.site-menu-layout{grid-template-columns:1fr;gap:14px;padding:clamp(24px,8vh,60px) 0}.site-menu-aside{font-size:8px}.site-menu-aside strong{display:inline;margin:0 0 0 10px}.site-menu-link{grid-template-columns:30px minmax(0,1fr) 24px;gap:8px;padding:14px 0}.menu-word{font-size:clamp(34px,11vw,62px)}.menu-project-subnav{grid-template-columns:1fr}.#site-menu.projects-expanded .menu-project-subnav{max-height:180px}.menu-project-subnav button{padding:10px}}
+@media(prefers-reduced-motion:reduce){#site-menu,#site-menu *{animation:none!important;transition-duration:.01ms!important}.menu-letter{opacity:1;filter:none;transform:none}.menu-letter::before,.menu-letter::after{display:none}.tag .menu-letter{animation:none!important}}
+#landing-scroll{position:relative}
+#stage{position:relative;width:100%;height:calc(108vh - var(--hh) - env(safe-area-inset-top,0px));isolation:isolate;background:#080e0b}
+#stage::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:repeating-radial-gradient(ellipse at 52% 58%,transparent 0 86px,#bfd9c50d 87px 88px,transparent 89px 148px);opacity:.3}
+canvas{display:block;width:100%;height:100%;cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill='none' stroke='%23e9ece9' stroke-width='1.8'%3E%3Cpath d='M16 2v10M16 20v10M2 16h10M20 16h10'/%3E%3C/g%3E%3Ccircle cx='16' cy='16' r='1.3' fill='%236fe05a'/%3E%3C/svg%3E") 16 16,crosshair;touch-action:none}
+.aim-cursor{position:fixed;left:0;top:0;z-index:100;width:32px;height:32px;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.86);transition:opacity .12s ease,transform .18s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 1px 2px #000)}
+.aim-cursor.visible{opacity:1}
+.aim-arm{position:absolute;display:block;background:#e9ece9;transition:transform .2s cubic-bezier(.2,.8,.2,1),background .2s,width .2s,height .2s}
+.aim-arm.top{left:15px;top:1px;width:2px;height:9px}.aim-arm.bottom{left:15px;bottom:1px;width:2px;height:9px}.aim-arm.left{left:1px;top:15px;width:9px;height:2px}.aim-arm.right{right:1px;top:15px;width:9px;height:2px}
+.aim-cursor-dot{position:absolute;left:14px;top:14px;box-sizing:border-box;width:4px;height:4px;border:1px solid #080e0b;border-radius:50%;background:var(--acc);transition:transform .18s,box-shadow .18s}
+.aim-cursor.is-hovering{animation:aimAcquire .28s cubic-bezier(.2,.8,.2,1)}
+.aim-cursor.is-hovering .aim-arm{background:var(--acc)}
+.aim-cursor.is-hovering .aim-arm.top{transform:translateY(-2px)}.aim-cursor.is-hovering .aim-arm.bottom{transform:translateY(2px)}.aim-cursor.is-hovering .aim-arm.left{transform:translateX(-2px)}.aim-cursor.is-hovering .aim-arm.right{transform:translateX(2px)}
+.aim-cursor.is-hovering .aim-cursor-dot{transform:scale(1.45);box-shadow:0 0 8px #6fe05a99}
+.aim-cursor.is-pressed .aim-arm.top{transform:translateY(1px)}.aim-cursor.is-pressed .aim-arm.bottom{transform:translateY(-1px)}.aim-cursor.is-pressed .aim-arm.left{transform:translateX(1px)}.aim-cursor.is-pressed .aim-arm.right{transform:translateX(-1px)}
+@keyframes aimAcquire{0%{transform:translate(-50%,-50%) scale(.72)}68%{transform:translate(-50%,-50%) scale(1.13)}100%{transform:translate(-50%,-50%) scale(1)}}
+.aim-cursor-ready :is(button,a,[role="button"],summary,.logo,.tag,.directional-hover):hover{cursor:none!important}
+#opening{position:fixed;inset:0;z-index:20;display:grid;place-items:end center;padding:0 18px calc(24px + env(safe-area-inset-bottom,0px));box-sizing:border-box;background:linear-gradient(180deg,#0006 0%,#0001 22%,#0000 65%,#0005 100%);transition:opacity .65s ease;pointer-events:auto}
+#opening.done{opacity:0;pointer-events:none}
+#opening-card{position:relative;width:min(300px,calc(100vw - 36px));padding:11px 14px 10px;border:1px solid var(--line);border-left:2px solid var(--acc);background:#0009;box-shadow:0 8px 28px #0008;text-align:left;overflow:hidden}
+.opening-kicker,.opening-status{display:flex;justify-content:space-between;gap:10px;color:var(--dim);font-size:9px;letter-spacing:.08em}
+.opening-kicker{padding-bottom:5px;border-bottom:1px solid #ffffff24}
+#opening-name{display:flex;align-items:baseline;gap:8px;position:relative;z-index:1;margin:7px 0 6px;font-size:clamp(16px,4.8vw,20px);font-weight:600;line-height:1.1;letter-spacing:.1em;animation:nameAssemble .65s cubic-bezier(.16,1,.3,1) both}
+#opening-name .surname{color:var(--ink)}
+#opening-name .firstname{color:var(--acc)}
+#opening.release #opening-name{animation:nameDissolve .55s ease forwards}
+.opening-status{margin-top:5px;letter-spacing:.04em}
+#opening-percent{color:var(--acc)}
+#opening-track{height:2px;margin-top:5px;background:#ffffff24}
+#opening-fill{display:block;width:0;height:100%;background:var(--acc);box-shadow:0 0 8px #6fe05a88;transition:width .08s linear}
+@keyframes nameAssemble{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+@keyframes nameDissolve{to{opacity:0;filter:blur(2px);transform:translateY(-4px)}}
+.hud{position:absolute;pointer-events:none;font-size:11px;color:var(--dim)}
+.alert{display:inline-block;background:#fff;color:#000;padding:1px 7px;font-weight:600;margin-bottom:3px}
+#hud1{left:20px;top:calc(var(--hh) + 12px)}
+#global-exp{width:210px;margin:2px 0 5px;padding:5px 7px;border:1px solid var(--line);background:#000a;color:var(--dim)}
+#global-exp-head{display:flex;justify-content:space-between;gap:10px;font-size:10px;letter-spacing:.06em;white-space:nowrap}
+#global-exp-count{color:var(--acc)}
+#global-exp-track{height:2px;margin-top:5px;background:#ffffff24}
+#global-exp-fill{display:block;width:0;height:100%;background:var(--acc);transition:width .5s ease}
+#hud2{left:20px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:210px;border:1px solid var(--line);padding:7px 9px;background:#000a}
+.map-key-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:5px;border-bottom:1px solid #ffffff24;color:var(--dim);font-size:9px;letter-spacing:.1em}
+.map-key-head b{color:var(--acc);font-weight:400}
+.map-key-row{display:grid;grid-template-columns:14px 1fr auto;align-items:center;gap:5px;padding-top:5px;font-size:10px;letter-spacing:.04em}
+.map-key-symbol{color:var(--acc);text-align:center;font-size:12px}
+.map-key-count{color:var(--dim);font-size:9px}
+.tag{position:absolute;left:0;top:0;font:inherit;font-size:11px;color:var(--ink);text-align:left;background:#000b;border:1px solid var(--line);padding:4px 8px;cursor:pointer;white-space:nowrap;transition:opacity .4s;will-change:transform}
+.tag::after{content:"";position:absolute;left:-1px;top:100%;height:var(--tag-stem-height,34px);border-left:1px solid #fffa}
+.tag.label-below::after{top:auto;bottom:100%}
+.tag b{color:var(--acc);font-weight:400}.tag span{color:var(--dim)}.tag .tag-name{color:var(--ink);white-space:nowrap}.tag .tag-copy .menu-letter{opacity:1;filter:none;transform:none;will-change:transform,opacity,filter}.tag b .menu-letter,.tag span .menu-letter{color:inherit}.tag .tag-name .menu-letter{color:var(--ink)}
+.tag.is-resolving .tag-copy .menu-letter{animation:menuTextResolve .78s cubic-bezier(.2,.8,.2,1) var(--menu-delay,0ms) both}
+.tag.is-resolving .tag-copy .menu-letter::before{animation:menuEchoResolve .58s steps(1,end) var(--menu-delay,0ms) both}
+.tag.is-resolving .tag-copy .menu-letter::after{animation:menuEchoResolve .62s steps(1,end) calc(var(--menu-delay,0ms) + 35ms) both}
+.tag:hover,.tag:focus-visible{border-color:var(--acc);outline:0}
+#panel{position:absolute;right:16px;top:calc(var(--hh) + 16px);bottom:16px;width:min(44vw,520px);overflow:auto;padding:20px;background:#000d;border:1px solid var(--line);opacity:0;pointer-events:none;transform:translateX(24px);transition:.5s}
+#panel.on{opacity:1;pointer-events:auto;transform:none}
+#panel.project-opening{transition:opacity .34s cubic-bezier(.2,.8,.2,1),transform .34s cubic-bezier(.2,.8,.2,1)!important;transform:translateX(-18px)!important}
+#panel h2{margin:12px 0 6px;font-size:22px;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+#panel .d{color:var(--dim);margin:0 0 16px;line-height:1.7}
+#back{font:inherit;color:var(--acc);background:none;border:1px solid var(--line);padding:4px 10px;cursor:pointer}
+.experience{margin:0 0 18px;padding:9px 10px;border:1px solid var(--line);background:#000a}
+.experience-meta{display:flex;justify-content:space-between;gap:12px;color:var(--dim);font-size:10px;letter-spacing:.08em}
+.experience-scope{margin-top:6px;color:var(--ink);font-size:10px;letter-spacing:.04em}
+.experience-track{height:3px;margin-top:7px;background:#ffffff24;overflow:hidden}
+.experience-track span{display:block;width:0;height:100%;background:var(--acc);box-shadow:0 0 8px #6fe05a88;transition:width .5s ease}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+/* Sélection circulaire des projets de la Maison */
+#panel.home-panel{width:min(44vw,520px);display:flex;flex-direction:column}
+.home-panel .home-wheel{position:relative;display:block;width:min(100%,410px);aspect-ratio:1;margin:14px auto 4px;border:1px solid #ffffff26;border-radius:50%;background:radial-gradient(circle,#18231c 0 17%,#101813 17.4% 34%,transparent 34.4%),radial-gradient(circle,transparent 0 47%,#d7e0d21c 47.3% 47.7%,transparent 48%),radial-gradient(circle,transparent 0 65%,#d7e0d20d 65.3% 65.7%,transparent 66%),radial-gradient(circle at 50% 50%,#19231d 0%,#0b100d 72%);box-shadow:inset 0 0 44px #0008,0 10px 32px #0005}
+.home-panel .home-wheel::before,.home-panel .home-wheel::after{content:"";position:absolute;inset:8%;border:1px solid #ffffff18;border-radius:50%;pointer-events:none}
+.home-panel .home-wheel::after{inset:27%;border-color:#6fe05a4a;box-shadow:0 0 24px #6fe05a12}
+.home-wheel-center{position:absolute;z-index:1;left:50%;top:50%;width:31%;aspect-ratio:1;transform:translate(-50%,-50%);display:grid;place-content:center;text-align:center;border:1px solid #6fe05a78;border-radius:50%;background:radial-gradient(circle,#18241b,#0b100d 72%);box-shadow:0 0 24px #6fe05a16,inset 0 0 16px #6fe05a0c;color:var(--acc);font-size:9px;letter-spacing:.12em;line-height:1.6}
+.home-wheel-center b{font-size:11px;font-weight:400;color:var(--ink)}
+.home-panel .home-wheel .project-card{position:absolute;width:33%;height:33%;padding:7px;display:flex;flex-direction:column;justify-content:center;text-align:center;background:#111914;border-color:#dce5dc55;box-shadow:0 5px 16px #0009;transition:transform .25s,border-color .2s,box-shadow .25s,background .2s}
+.home-panel .home-wheel .project-card:nth-of-type(1){left:50%;top:4%;transform:translateX(-50%)}
+.home-panel .home-wheel .project-card:nth-of-type(2){right:4%;bottom:8%}
+.home-panel .home-wheel .project-card:nth-of-type(3){left:4%;bottom:8%}
+.home-panel .home-wheel .project-card:hover,.home-panel .home-wheel .project-card:focus-visible{z-index:3;transform:scale(1.08);border-color:var(--acc);background:#19251c;box-shadow:0 0 24px #6fe05a3a}
+.home-panel .home-wheel .project-card:nth-of-type(1):hover,.home-panel .home-wheel .project-card:nth-of-type(1):focus-visible{transform:translateX(-50%) scale(1.08)}
+.home-panel .home-wheel .project-card .img{display:none}
+.home-panel .home-wheel .project-card::before{content:"01";display:grid;place-items:center;width:36%;aspect-ratio:1;margin:0 auto 5px;border:1px solid #ffffff36;border-radius:50%;color:var(--acc);font-size:10px;letter-spacing:.08em;background:radial-gradient(circle,#25352a,#101813 70%)}
+.home-panel .home-wheel .project-card:nth-of-type(2)::before{content:"02"}
+.home-panel .home-wheel .project-card:nth-of-type(3)::before{content:"03"}
+.home-panel .home-wheel .project-card h3{margin:3px 0 0;font-size:clamp(8px,1vw,11px);line-height:1.2}
+.home-panel .home-wheel .project-card p{display:none!important}
+.home-panel .home-wheel .project-card .project-action{margin-top:4px;font-size:7px;line-height:1.2}
+@media(max-width:700px){#panel.home-panel{left:10px;right:10px;top:auto;height:56%;width:auto}.home-panel .home-wheel{width:min(100%,350px);margin:8px auto}.home-panel .home-wheel .project-card{width:34%;height:34%;padding:5px}.home-wheel-center{font-size:8px}}
+/* La Maison devient le point central de la sélection, au-dessus du lieu. */
+#panel.home-panel{z-index:3;inset:0;width:auto;height:auto;bottom:0;overflow:hidden;padding:0;background:transparent;border:0;transform:none;pointer-events:none}
+#panel.home-panel.on{transform:none}
+.home-panel>#back{position:absolute;right:20px;top:calc(var(--hh) + 18px);z-index:4;pointer-events:auto;background:#080d0bea;border-color:#ffffff55;padding:7px 12px}
+.home-panel>h2,.home-panel>.d,.home-panel>.experience{display:none}
+.home-panel .home-wheel{position:absolute;left:50%;top:52%;width:min(68vmin,510px);margin:0;transform:translate(-50%,-50%);pointer-events:none;background:none;border:0;border-radius:0;box-shadow:none}
+.home-panel .home-wheel .project-card{pointer-events:auto;width:31%;height:31%;padding:10px}
+.home-panel .home-wheel .project-card:nth-of-type(1){left:50%;top:2%;transform:translateX(-50%)}
+.home-panel .home-wheel .project-card:nth-of-type(2){right:2%;bottom:6%}
+.home-panel .home-wheel .project-card:nth-of-type(3){left:2%;bottom:6%}
+.home-panel .home-wheel .project-card:nth-of-type(1):hover,.home-panel .home-wheel .project-card:nth-of-type(1):focus-visible{transform:translateX(-50%) scale(1.08)}
+.home-wheel-center{display:none}
+.home-wheel-center b{font-size:clamp(10px,1.6vmin,14px);letter-spacing:.08em}
+@media(max-width:700px){#panel.home-panel{left:0;right:0;top:0;height:auto;width:auto}.home-panel .home-wheel{width:min(84vw,58vh,390px);top:52%}.home-panel .home-wheel .project-card{width:33%;height:33%;padding:6px}}
+
+
+.card{border:1px solid var(--line);padding:10px}
+.card .img{height:100px;min-width:0;overflow:hidden;background:repeating-linear-gradient(45deg,#ffffff14 0 6px,#ffffff06 6px 12px);display:grid;place-items:center;color:var(--dim);font-size:11px;transition:height .28s ease,box-shadow .28s ease}
+.card h3{margin:10px 0 2px;font-size:14px;font-weight:600}.card p{margin:0;color:var(--dim);font-size:12px}
+.project-card{position:relative;min-width:0;cursor:pointer;transition:transform .22s ease,border-color .2s,background .2s,box-shadow .22s ease}.project-card:hover,.project-card:focus-visible{z-index:2;transform:scale(1.025);border-color:var(--acc);outline:0;box-shadow:0 8px 24px #0008}.project-card:hover .img,.project-card:focus-visible .img{position:relative;z-index:0;height:176px;box-shadow:0 10px 28px #000a}.project-card.opened{background:#6fe05a0a}.project-card:not(.opened) p{display:block;max-height:0;margin:0;opacity:0;overflow:hidden;transition:max-height .25s ease,opacity .2s ease,margin .2s ease}.project-card:not(.opened):hover p,.project-card:not(.opened):focus-visible p{max-height:100px;margin:0;opacity:1}.project-action{margin-top:10px;color:var(--acc);font-size:10px;letter-spacing:.06em}.project-card.opened .project-action{color:var(--dim)}
+#project-page{position:absolute;inset:var(--hh) 0 0;z-index:4;overflow:auto;overscroll-behavior:contain;background:#0a100d;color:var(--ink);opacity:0;pointer-events:none;transform:translateX(26px);transition:opacity .42s cubic-bezier(.2,.8,.2,1),transform .58s cubic-bezier(.2,.8,.2,1);scroll-behavior:smooth}
+#project-page.on{opacity:1;pointer-events:auto;transform:translateX(0)}
+#project-page,#project-page *{box-sizing:border-box}
+.project-topbar{position:sticky;top:0;z-index:8;min-height:48px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 20px;background:#080d0bea;border-bottom:1px solid #ffffff24;backdrop-filter:blur(14px)}
+.project-topbar button{font:inherit;color:var(--acc);background:none;border:1px solid #ffffff36;padding:5px 10px;cursor:pointer;font-size:10px;letter-spacing:.06em}
+.project-topbar button:hover{border-color:var(--acc)}
+.project-top-meta{color:var(--dim);font-size:9px;letter-spacing:.12em;text-align:right}
+.project-hero{height:clamp(420px,70vh,720px);position:relative;overflow:hidden;display:flex;align-items:flex-end}
+.project-hero>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 54%;filter:saturate(.82)}
+.project-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#050908c9 0%,#05090872 43%,#05090808 78%),linear-gradient(0deg,#050908ee 0%,transparent 62%)}
+.project-hero-copy{position:relative;z-index:1;max-width:850px;padding:clamp(28px,6vw,76px)}
+.project-eyebrow,.project-section-kicker{color:var(--acc);font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.project-hero h1{margin:14px 0 12px;font-size:clamp(52px,9vw,118px);font-weight:400;line-height:.88;letter-spacing:-.09em;text-transform:uppercase}
+.project-hero h1 span{display:block;color:#d6dfd5;font-size:.58em;letter-spacing:-.06em}
+.project-hero-copy p{max-width:440px;margin:18px 0 0;color:#d0d8d0;font-size:clamp(13px,1.5vw,17px);line-height:1.75}
+.project-hero-index{position:absolute;right:28px;bottom:30px;z-index:1;color:#dce4db;font-size:10px;letter-spacing:.14em;writing-mode:vertical-rl}
+.project-anchorbar{display:flex;gap:24px;overflow:auto;padding:13px clamp(20px,5vw,64px);border-bottom:1px solid #ffffff24;background:#0a100d;color:var(--dim);white-space:nowrap}
+.project-anchorbar a{color:inherit;text-decoration:none;font-size:9px;letter-spacing:.12em}
+.project-anchorbar a:hover{color:var(--acc)}
+.project-page-content{max-width:1440px;margin:0 auto;padding:0 clamp(20px,5vw,64px) 72px}
+.project-intro{display:grid;grid-template-columns:.8fr 1.2fr;gap:clamp(24px,6vw,76px);padding:clamp(34px,5vw,64px) 0;border-bottom:1px solid #ffffff26}
+.project-intro h2,.project-section-title h2{margin:12px 0 0;font-weight:400;font-size:clamp(30px,4.5vw,56px);line-height:1.08;letter-spacing:-.055em}
+.project-intro-copy{padding-top:12px;color:#bfc8bf;font-size:13px;line-height:1.7}
+.project-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}
+.project-fact{padding-top:10px;border-top:1px solid #ffffff38}
+.project-fact b{display:block;color:var(--ink);font-size:10px;font-weight:400;letter-spacing:.05em}
+.project-fact span{display:block;margin-top:5px;color:var(--dim);font-size:9px}
+.project-section{padding:clamp(42px,6vw,76px) 0;border-bottom:1px solid #ffffff26;scroll-margin-top:62px}
+.project-section-title{display:grid;grid-template-columns:110px 1fr;gap:18px;align-items:start;margin-bottom:22px}
+.project-section-num{color:var(--acc);font-size:11px;letter-spacing:.13em;padding-top:10px}
+.project-section-title h2{font-size:clamp(28px,4vw,46px)}
+.project-section-lede{max-width:730px;margin:0 0 28px 128px;color:#bfc8bf;font-size:13px;line-height:1.8}
+.project-problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-left:128px}
+.project-problem{min-height:100px;padding:13px;border:1px solid #ffffff29;background:#101813}
+.project-problem span{color:var(--acc);font-size:9px;letter-spacing:.12em}
+.project-problem p{margin:8px 0 0;color:#c3ccc3;font-size:11px;line-height:1.55}
+.project-question{margin:14px 0 0 128px;padding:14px 18px;border-left:2px solid var(--acc);background:#6fe05a0d;color:#dce5dc;font-size:clamp(16px,2.4vw,25px);line-height:1.5}
+.project-feature{display:grid;grid-template-columns:1fr;gap:18px;align-items:start}
+.project-feature-copy{max-width:780px;order:2;display:flex;align-items:baseline;gap:18px}.project-feature-copy .project-section-kicker{flex:none}
+.project-feature-copy p{max-width:680px;margin:0;color:#bfc8bf;font-size:13px;line-height:1.7}
+.project-feature-image{position:relative;order:1;margin:0;overflow:hidden;width:100%;background:radial-gradient(ellipse at 50% 46%,#27352c 0%,#151d18 63%,#101612 100%)}
+.project-feature-image img{display:block;width:100%;height:clamp(360px,56vw,700px);object-fit:contain;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+.project-feature-image:hover img{transform:scale(1.025)}
+.project-feature-image figcaption,.project-gallery figcaption,.project-plan figcaption{padding:9px 2px 0;color:var(--dim);font-size:9px;letter-spacing:.04em;line-height:1.5}
+.project-visual-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}
+.project-visual-grid figure{margin:0;min-width:0;overflow:hidden;background:#111914}
+.project-visual-grid img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.project-visual-grid figure:nth-child(2) img{object-position:center;background:#111914}.project-visual-grid figure:nth-child(3){grid-column:1/-1}.project-visual-grid figure:nth-child(3) img{aspect-ratio:2/1;object-fit:cover;object-position:40% 0%}
+
+.project-plan{display:grid;grid-template-columns:1.08fr .82fr;align-items:center;gap:clamp(28px,6vw,84px)}
+.project-plan figure{position:relative;margin:0;overflow:hidden;padding:clamp(10px,1.8vw,22px);border:1px solid #ffffff27;background:radial-gradient(ellipse at 48% 48%,#273129 0%,#171e19 58%,#101612 100%);box-shadow:0 22px 60px #0005,inset 0 0 36px #b1c7a20b}
+.project-plan figure::before{content:"DOCUMENT DE TRAVAIL · 01";display:block;margin:0 0 8px;color:#94a391;font:9px/1.4 'IBM Plex Mono',monospace;letter-spacing:.14em}
+.project-plan img{display:block;width:100%;height:auto;background:transparent;filter:invert(.86) sepia(.14) saturate(.38) hue-rotate(72deg);mix-blend-mode:screen;opacity:.88}
+.project-plan figcaption{margin-top:8px;padding:9px 2px 0;border-top:1px solid #ffffff25;color:#94a391;font:9px/1.6 'IBM Plex Mono',monospace;letter-spacing:.08em}
+.project-plan>div{position:relative;padding:8px 0 8px clamp(18px,2vw,28px);border-left:1px solid #6fe05a65}
+.project-plan p{max-width:410px;color:#bfc8bf;font-size:12px;line-height:1.7}
+.project-maquette-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+.project-maquette-grid figure{margin:0;overflow:hidden;background:#141a17}
+.project-maquette-grid img{display:block;width:100%;height:clamp(380px,48vw,640px);object-fit:contain;background:#151d18;transition:transform .7s ease}
+.project-maquette-grid figure:hover img{transform:scale(1.03)}
+.project-site-block{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:stretch;margin-top:30px}
+.project-site-block figure{margin:0;background:#151d18}.project-site-block figure img,.project-site-block video{display:block;width:100%;height:100%;min-height:260px;object-fit:cover;background:#151d18}.project-site-block figure img{object-fit:cover}
+.project-site-note{display:flex;flex-direction:column;justify-content:center;padding:clamp(20px,4vw,48px);border:1px solid #ffffff29;background:#0f1712}
+.project-site-note p{color:#bfc8bf;font-size:12px;line-height:1.85}
+.project-brand{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;padding:24px;background:#c4c7b8;color:#172019}
+.project-brand img{display:block;width:min(250px,80%);height:280px;object-fit:contain;margin:auto}
+.project-brand p{max-width:370px;font-family:Georgia,serif;font-size:clamp(20px,3vw,33px);line-height:1.3}
+.project-brand span{display:block;margin-top:18px;font:10px/1.5 'IBM Plex Mono',monospace;letter-spacing:.1em;text-transform:uppercase}
+.project-resources{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.project-resource{display:flex;flex-direction:column;min-height:120px;padding:17px;border:1px solid #ffffff31;background:#0e1511;color:var(--ink);text-decoration:none;transition:border-color .2s,background .2s}
+.project-resource:hover{border-color:var(--acc);background:#6fe05a0c}
+.project-resource span{color:var(--acc);font-size:9px;letter-spacing:.12em}
+.project-resource b{margin-top:auto;padding-top:18px;font-size:12px;font-weight:400}
+.project-video-archive{margin-top:16px;border:1px solid #ffffff29;background:#101813}.project-video-archive summary{padding:13px 16px;color:var(--acc);cursor:pointer;font-size:9px;letter-spacing:.1em}.project-video-links{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 12px 12px}.project-video-links a{padding:11px;border:1px solid #ffffff20;color:var(--ink);text-decoration:none;font-size:9px;letter-spacing:.07em}.project-video-links a:hover{border-color:var(--acc)}@media(max-width:800px){.project-video-links{grid-template-columns:repeat(2,1fr)}}
+.project-endmark{padding-top:32px;color:var(--dim);font-size:9px;letter-spacing:.13em;text-align:right}
+.project-card-image{display:block;min-width:0;width:100%;height:100%;max-width:100%;object-fit:cover;object-position:center 46%}
+#project-page,#eco-project-page,#city-project-page{inset:var(--hh) 0 0}
+@media(max-width:800px){.project-topbar{padding:7px 11px}.project-top-meta{font-size:8px}.project-hero{height:62vh;min-height:410px}.project-hero-copy{padding:24px}.project-hero-index{right:12px;bottom:18px}.project-anchorbar{gap:18px;padding:12px 18px}.project-page-content{padding:0 18px 52px}.project-intro,.project-feature,.project-plan{grid-template-columns:1fr}.project-feature-copy{display:block}.project-feature-copy .project-section-kicker{margin-bottom:8px}.project-intro{gap:10px;padding:38px 0}.project-intro-copy{padding:0}.project-facts{gap:8px}.project-section-title{grid-template-columns:52px 1fr;gap:8px}.project-section-lede,.project-problem-grid,.project-question{margin-left:60px}.project-problem-grid{grid-template-columns:1fr}.project-problem{min-height:auto}.project-visual-grid{grid-template-columns:1fr}.project-visual-grid img{height:auto;aspect-ratio:16/9;max-height:none;object-fit:cover}.project-visual-grid figure:nth-child(3){grid-column:auto}.project-visual-grid figure:nth-child(3) img{aspect-ratio:16/9;object-position:40% 0%}.project-maquette-grid,.project-site-block,.project-brand,.project-resources{grid-template-columns:1fr}.project-maquette-grid img{height:clamp(320px,110vw,560px);max-height:none;object-fit:contain}.project-site-block figure img,.project-site-block video{min-height:220px}.project-brand img{height:220px}.project-resource{min-height:100px}}
+@media(max-width:700px){header{padding:0 10px;gap:8px}.logo span{display:none}#panel{left:10px;right:10px;top:auto;height:56%;width:auto;transform:translateY(24px)}#hud2{display:none}.tag b,.tag span,.tag br{display:none}.tag{padding:3px 7px}}
+
+#eco-project-page{position:absolute;inset:var(--hh) 0 0;z-index:4;overflow:auto;overscroll-behavior:contain;background:#0a100d;color:var(--ink);opacity:0;pointer-events:none;transform:translateX(26px);transition:opacity .42s cubic-bezier(.2,.8,.2,1),transform .58s cubic-bezier(.2,.8,.2,1);scroll-behavior:smooth}
+#eco-project-page.on{opacity:1;pointer-events:auto;transform:translateX(0)}
+#eco-project-page,#eco-project-page *{box-sizing:border-box}
+#eco-project-page .project-hero>img{object-position:center 70%}
+@media(max-width:800px){#eco-project-page,#city-project-page{inset:var(--hh) 0 0}}
+
+#city-project-page{position:absolute;inset:var(--hh) 0 0;z-index:4;overflow:auto;overscroll-behavior:contain;background:#0a100d;color:var(--ink);opacity:0;pointer-events:none;transform:translateX(26px);transition:opacity .42s cubic-bezier(.2,.8,.2,1),transform .58s cubic-bezier(.2,.8,.2,1);scroll-behavior:smooth}
+#city-project-page.on{opacity:1;pointer-events:auto;transform:translateX(0)}
+#city-project-page,#city-project-page *{box-sizing:border-box}
+#city-project-page .project-hero>img{object-position:center 56%}
+
+#about-page{position:relative;z-index:1;min-height:100vh;overflow:visible;background:#080e0b;color:var(--ink);scroll-margin-top:calc(var(--hh) + env(safe-area-inset-top,0px))}
+#about-page,#about-page *{box-sizing:border-box}
+.about-content{max-width:1320px;margin:0 auto;padding:clamp(34px,7vw,92px) clamp(20px,7vw,96px) 70px}
+.about-main{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.72fr);gap:clamp(36px,9vw,132px);align-items:center;min-height:calc(100vh - var(--hh) - 150px)}
+.about-copy{max-width:640px;padding:30px 0}
+.about-kicker{margin-bottom:clamp(34px,7vh,76px);color:var(--acc);font-size:9px;letter-spacing:.15em;text-transform:uppercase}
+.about-copy h1{margin:0 0 22px;font-size:clamp(56px,9.2vw,124px);font-weight:400;line-height:.86;letter-spacing:-.085em}
+.about-copy h1 em{color:var(--acc);font-style:normal}
+.about-role{margin:0 0 20px;color:var(--ink);font-size:clamp(14px,1.5vw,18px);letter-spacing:.02em}
+.about-bio{max-width:490px;margin:0;color:#bfc8bf;font-size:clamp(13px,1.25vw,15px);line-height:1.85}
+.about-photo{position:relative;width:100%;max-height:68vh;min-height:380px;aspect-ratio:4/5;overflow:hidden;border:1px solid #ffffff35;background:radial-gradient(ellipse at 50% 38%,#26362a 0%,#152019 44%,#0c120e 100%);box-shadow:0 24px 70px #0005}
+.about-photo::before{content:"";position:absolute;inset:12px;border:1px solid #ffffff18;pointer-events:none}
+.about-photo-label,.about-photo-note{position:absolute;left:24px;right:24px;color:#c2ccc2;font-size:9px;letter-spacing:.13em;text-transform:uppercase}
+.about-photo-label{top:26px;display:flex;justify-content:space-between}
+.about-photo-note{bottom:26px;color:var(--acc)}
+.about-photo-mark{position:absolute;left:50%;top:49%;width:112px;height:150px;transform:translate(-50%,-50%);opacity:.52}
+.about-photo-mark::before{content:"";position:absolute;left:35px;top:0;width:42px;height:52px;border:1px solid #dce5dc;border-radius:50%;background:linear-gradient(135deg,#dce5dc20,#dce5dc02)}
+.about-photo-mark::after{content:"";position:absolute;left:8px;bottom:0;width:96px;height:82px;border:1px solid #dce5dc;border-radius:52px 52px 12px 12px;background:linear-gradient(145deg,#dce5dc18,#dce5dc02)}
+.about-vision{display:grid;grid-template-columns:150px 1fr;gap:24px;padding-top:18px;border-top:1px solid #ffffff32;color:var(--acc);font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+.about-vision p{max-width:760px;margin:0;color:#d4dbd4;font-size:clamp(15px,2vw,24px);line-height:1.55;letter-spacing:-.025em;text-transform:none}
+.about-original{border-top:1px solid #ffffff32}
+.about-original-content{max-width:1360px;margin:0 auto;padding:clamp(34px,6vw,78px) clamp(20px,6vw,88px) 84px}
+.about-original-kicker{display:flex;justify-content:space-between;gap:18px;color:var(--dim);font-size:9px;letter-spacing:.15em;text-transform:uppercase}
+.about-original-hero{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(24px,7vw,110px);align-items:end;padding:clamp(42px,9vh,100px) 0 clamp(34px,6vh,70px);border-bottom:1px solid #ffffff32}
+.about-original-hero h2{margin:0;font-size:clamp(52px,9.5vw,132px);font-weight:400;line-height:.87;letter-spacing:-.09em}
+.about-original-hero h2 em{color:var(--acc);font-style:normal}
+.about-original-intro{padding-bottom:8px}
+.about-original-label{margin-bottom:18px;color:var(--acc);font-size:10px;letter-spacing:.14em;text-transform:uppercase}
+.about-original-intro p{max-width:490px;margin:0 0 14px;color:#cbd3ca;font-size:clamp(13px,1.35vw,16px);line-height:1.85}
+.about-original-method{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:clamp(46px,9vh,92px);border-top:1px solid #ffffff32;border-bottom:1px solid #ffffff32}
+.about-original-method article{min-height:190px;padding:20px 22px 24px 0}
+.about-original-method article+article{padding-left:22px;border-left:1px solid #ffffff25}
+.about-original-method span{color:var(--acc);font-size:9px;letter-spacing:.14em}
+.about-original-method h3{margin:27px 0 8px;font-size:clamp(17px,2.5vw,28px);font-weight:400;letter-spacing:-.04em}
+.about-original-method p{max-width:280px;margin:0;color:var(--dim);font-size:11px;line-height:1.7}
+.about-original-position{display:grid;grid-template-columns:.65fr 1.35fr;gap:28px;margin-top:clamp(44px,8vh,84px);align-items:start}
+.about-original-position-label{color:var(--acc);font-size:9px;letter-spacing:.14em;text-transform:uppercase}
+.about-original-position p{max-width:780px;margin:0;font-size:clamp(21px,3.4vw,42px);line-height:1.35;letter-spacing:-.045em}
+.about-original-signoff{display:flex;justify-content:space-between;gap:16px;margin-top:clamp(52px,10vh,110px);padding-top:14px;border-top:1px solid #ffffff32;color:var(--dim);font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+.about-topline{position:sticky;top:calc(var(--hh) + env(safe-area-inset-top,0px));z-index:4;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px clamp(14px,3vw,28px);border-bottom:1px solid #ffffff28;background:#080d0bea;backdrop-filter:blur(14px);color:var(--dim);font-size:9px;letter-spacing:.12em}
+.about-topline button{position:relative;overflow:hidden;padding:7px 10px;border:1px solid #ffffff38;background:transparent;color:var(--ink);font:inherit;font-size:9px;letter-spacing:.1em;cursor:pointer}
+.about-topline button:hover{border-color:#ffffff70;color:#fff}
+.about-topline span:last-child{color:var(--acc)}
+@media(max-width:760px){#stage{height:calc(104vh - var(--hh) - env(safe-area-inset-top,0px))}.about-content{padding:30px 20px 52px}.about-main{grid-template-columns:1fr;gap:26px;min-height:0}.about-copy{padding:28px 0 0}.about-kicker{margin-bottom:34px}.about-copy h1{font-size:clamp(58px,14vw,94px)}.about-photo{width:min(100%,460px);min-height:0;max-height:none;aspect-ratio:4/4.6;margin:0 auto}.about-vision{grid-template-columns:1fr;gap:12px;margin-top:40px}.about-photo-label,.about-photo-note{left:20px;right:20px}}
+@media(max-width:760px){.about-original-content{padding:30px 20px 54px}.about-original-hero{grid-template-columns:1fr;gap:30px;padding:48px 0 34px}.about-original-hero h2{font-size:clamp(56px,14vw,94px)}.about-original-method{grid-template-columns:1fr;margin-top:42px}.about-original-method article{min-height:0;padding:18px 0}.about-original-method article+article{padding-left:0;border-left:0;border-top:1px solid #ffffff25}.about-original-method h3{margin:10px 0 5px}.about-original-position{grid-template-columns:1fr;gap:14px}.about-original-signoff{flex-direction:column;gap:8px}}
+
+
+.project-topbar::after{content:"";position:absolute;left:0;bottom:-1px;width:100%;height:1px;background:var(--acc);transform:scaleX(0);transform-origin:left center;opacity:0;pointer-events:none}
+.project-media-fade{opacity:0;transform:scale(1.012);transition:opacity .78s cubic-bezier(.2,.8,.2,1),transform .92s cubic-bezier(.2,.8,.2,1)}
+.project-media-fade.is-visible{opacity:1;transform:scale(1)}
+:is(#project-page,#eco-project-page,#city-project-page).project-reveal-in .project-topbar::after{animation:projectRulePass .38s cubic-bezier(.2,.8,.2,1) both}
+:is(#project-page,#eco-project-page,#city-project-page).project-reveal-in .project-hero-copy{animation:projectCopyOpen .34s cubic-bezier(.2,.8,.2,1) both}
+@keyframes projectRulePass{0%{transform:scaleX(0);opacity:1}85%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1);opacity:0}}
+@keyframes projectCopyOpen{0%{opacity:0;transform:translateY(10px)}68%{opacity:.45;transform:translateY(2px)}100%{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){:is(#project-page,#eco-project-page,#city-project-page){transition:none}.project-media-fade{opacity:1;transform:none;transition:none}:is(#project-page,#eco-project-page,#city-project-page).project-reveal-in .project-topbar::after,:is(#project-page,#eco-project-page,#city-project-page).project-reveal-in .project-hero-copy{animation:none}}
+
+.eden-pdf-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 14px}
+.eden-pdf-head p{max-width:430px;margin:0;color:#aeb8ae;font-size:11px;line-height:1.7}
+.eden-pdf-actions{display:flex;gap:8px;flex-wrap:wrap}
+.eden-pdf-actions a{display:inline-block;padding:8px 11px;border:1px solid #ffffff38;color:var(--ink);text-decoration:none;font-size:9px;letter-spacing:.08em;white-space:nowrap}
+.eden-pdf-actions a:first-child{border-color:#6fe05a78;color:var(--acc)}
+.eden-pdf-actions a:hover{border-color:var(--acc)}
+.eden-pdf-frame{display:block;width:100%;height:min(78vh,860px);min-height:560px;border:1px solid #ffffff35;background:#111914}
+.eden-pdf-fallback{margin:8px 0 0;color:var(--dim);font-size:10px}
+.eden-pdf-fallback a{color:var(--acc)}
+@media(max-width:700px){.eden-pdf-head{display:block}.eden-pdf-actions{margin-top:12px}.eden-pdf-frame{height:68vh;min-height:430px}}
+.eden-thesis{margin:14px 0 0 128px;padding:17px 20px;border-left:2px solid var(--acc);background:#6fe05a0d;color:#dce5dc;font-size:clamp(16px,2.3vw,25px);line-height:1.5}
+.eden-thesis span{display:block;margin-bottom:7px;color:var(--acc);font-size:9px;letter-spacing:.14em}
+.eden-visual-grid{display:grid;grid-template-columns:.75fr 1.25fr;gap:12px;align-items:stretch}
+.eden-visual-grid figure{margin:0;min-width:0;overflow:hidden;background:#101713}
+.eden-visual-grid img{display:block;width:100%;height:clamp(320px,40vw,560px);object-fit:cover}
+.eden-visual-grid figure:first-child img{object-position:center 55%}
+.eden-visual-grid figcaption{padding:9px 12px;color:var(--dim);font-size:9px;line-height:1.55;letter-spacing:.06em}
+.eden-meta{display:flex;justify-content:space-between;gap:16px;margin:24px 0 0;padding-top:12px;border-top:1px solid #ffffff29;color:var(--dim);font-size:9px;letter-spacing:.1em}
+@media(max-width:800px){.eden-thesis{margin-left:60px}.eden-visual-grid{grid-template-columns:1fr 1fr}.eden-visual-grid img{height:clamp(240px,42vw,380px)}}
+@media(max-width:600px){.eden-thesis{margin-left:0}.eden-visual-grid{grid-template-columns:1fr}.eden-visual-grid img{height:auto;max-height:110vw;aspect-ratio:16/10}}
+
+.eco-analysis-lede{max-width:800px;margin:0 0 24px 128px;color:#c5cec5;font-size:14px;line-height:1.85}
+.eco-lifecycle{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-left:128px}
+.eco-cycle-step{min-height:210px;padding:15px 13px;border-top:1px solid #6fe05a8c;background:linear-gradient(180deg,#6fe05a0b,transparent 80%)}
+.eco-cycle-step b{display:block;color:var(--acc);font-size:9px;font-weight:400;letter-spacing:.12em}
+.eco-cycle-step h3{margin:17px 0 8px;font-size:15px;font-weight:400}
+.eco-cycle-step p{margin:0;color:#aeb8ae;font-size:11px;line-height:1.7}
+.eco-method-note{margin:15px 0 0 128px;padding:11px 14px;border-left:1px solid #d9cf9b;color:#aeb8ae;font-size:10px;line-height:1.65}
+.eco-research-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 0 128px}
+.eco-research-pair .project-problem{min-height:140px}
+.eco-concepts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.eco-concept{min-width:0;border:1px solid #ffffff29;background:#0c130f}
+.eco-concept-copy{padding:16px 17px 18px}
+.eco-concept-copy .project-section-kicker{margin-bottom:9px}
+.eco-concept-copy h3{margin:0 0 8px;font-size:18px;font-weight:400}
+.eco-concept-copy p{margin:0;color:#bfc8bf;font-size:11px;line-height:1.75}
+.eco-concept figure{margin:0;overflow:hidden;background:#131a16}
+.eco-concept figure img{display:block;width:100%;height:clamp(280px,34vw,460px);object-fit:cover}
+.eco-concept .eco-object-photo{background:#e8e9e4}
+.eco-concept .eco-object-photo img{height:clamp(280px,34vw,460px);object-fit:contain}
+.eco-concept figcaption{padding:9px 12px;color:var(--dim);font-size:9px;letter-spacing:.07em;line-height:1.5}
+.eco-selection{margin-top:14px;padding:17px 20px;border-left:2px solid var(--acc);background:#6fe05a0d;color:#dce5dc;font-size:clamp(15px,2vw,21px);line-height:1.55}
+.eco-selection span{display:block;margin-bottom:6px;color:var(--acc);font-size:9px;letter-spacing:.14em}
+@media(max-width:800px){.eco-analysis-lede,.eco-lifecycle,.eco-method-note{margin-left:60px}.eco-lifecycle{grid-template-columns:1fr 1fr}.eco-cycle-step{min-height:0}.eco-research-pair{margin-left:60px}}
+@media(max-width:600px){.eco-analysis-lede,.eco-lifecycle,.eco-method-note,.eco-research-pair{margin-left:0}.eco-lifecycle,.eco-research-pair,.eco-concepts{grid-template-columns:1fr}.eco-cycle-step{padding:13px;min-height:0}.eco-cycle-step h3{margin:9px 0 5px}.eco-concept figure img,.eco-concept .eco-object-photo img{height:auto;max-height:95vw;aspect-ratio:4/3}.eco-concept .eco-object-photo img{object-fit:contain}}
+
+</style>
+</head>
+<body>
+<div id="opening" aria-live="polite"><div id="opening-card"><div class="opening-kicker"><span>PORTFOLIO / DESIGNER</span><span>001</span></div><h1 id="opening-name"><span class="surname">PRADIER</span><span class="firstname">Noé</span></h1><div class="opening-status"><span>ÎLE EN FORMATION</span><span id="opening-percent">0%</span></div><div id="opening-track"><span id="opening-fill"></span></div></div></div>
+<header>
+  <div class="logo" id="logo">PRADIER Noé<span> <i>/</i> DESIGNER</span></div>
+  <nav aria-label="Navigation principale">
+    <button id="menu-toggle" type="button" aria-expanded="false" aria-controls="site-menu"><span class="menu-toggle-text">MENU</span><span class="menu-toggle-mark" aria-hidden="true"></span></button>
+  </nav>
+</header>
+<div id="site-menu" aria-hidden="true" inert>
+  <div class="site-menu-top"><span><b>PRADIER Noé</b> / INDEX DU SITE</span><button class="site-menu-close" id="menu-close" type="button">FERMER <span>×</span></button></div>
+  <div class="site-menu-layout">
+    <div class="site-menu-aside">NAVIGATION / 04<strong>ÎLE EN FORMATION<br>PORTFOLIO INTERACTIF</strong></div>
+    <nav class="site-menu-links" aria-label="Rubriques du portfolio">
+      <button class="site-menu-link" type="button" data-menu-go="map" aria-label="Accueil"><span class="menu-index">01</span><span class="menu-word" data-label="Accueil" data-row="0" aria-hidden="true"></span><span class="menu-arrow" aria-hidden="true">↗</span></button>
+      <button class="site-menu-link" id="projects-menu-toggle" type="button" aria-expanded="false" aria-controls="projects-subnav" aria-label="Projects"><span class="menu-index">02</span><span class="menu-word" data-label="Projects" data-row="1" aria-hidden="true"></span><span class="menu-arrow" aria-hidden="true">⌄</span></button>
+      <div class="menu-project-subnav" id="projects-subnav" aria-hidden="true" inert><button type="button" data-menu-go="nature">NATURE <small>03 PROJETS</small></button><button type="button" data-menu-go="city">VILLE <small>03 PROJETS</small></button><button type="button" data-menu-go="home">MAISON <small>03 PROJETS</small></button></div>
+      <button class="site-menu-link" type="button" data-menu-go="about" aria-label="Laboratoire"><span class="menu-index">03</span><span class="menu-word" data-label="Laboratoire" data-row="2" aria-hidden="true"></span><span class="menu-arrow" aria-hidden="true">↗</span></button>
+      <button class="site-menu-link" type="button" data-menu-go="contact" aria-label="Contact"><span class="menu-index">04</span><span class="menu-word" data-label="Contact" data-row="3" aria-hidden="true"></span><span class="menu-arrow" aria-hidden="true">↗</span></button>
+    </nav>
+  </div>
+</div>
+<main>
+<div id="landing-scroll">
+<div id="stage">
+  <canvas id="cv"></canvas>
+  <div class="hud" id="hud1"><div class="alert">⚠ PORTFOLIO · CARTE VIVANTE</div><div id="global-exp"><div id="global-exp-head"><span>ÎLE ENTIÈRE</span><span id="global-exp-count">0 / 9 PROJETS</span></div><div id="global-exp-track" role="progressbar" aria-label="Progression de tous les projets" aria-valuemin="0" aria-valuemax="9" aria-valuenow="0"><span id="global-exp-fill"></span></div></div>&gt; 3 SECTEURS<br>&gt; ROTATION DE LA CARTE · SÉLECTION D’UN LIEU</div>
+  <div class="hud" id="hud2"><div class="map-key-head"><span>REPÈRES DE L’ÎLE</span><b>03 SECTEURS</b></div><div class="map-key-row"><span class="map-key-symbol">▲</span><span>NATURE</span><span class="map-key-count">03 PROJETS</span></div><div class="map-key-row"><span class="map-key-symbol">■</span><span>VILLE</span><span class="map-key-count">03 PROJETS</span></div><div class="map-key-row"><span class="map-key-symbol">⌂</span><span>MAISON</span><span class="map-key-count">03 PROJETS</span></div></div>
+  <div id="tags"></div>
+  <section id="panel"></section>
+  <section id="project-page" aria-label="Projet Hôtel à Cigales" aria-hidden="true" inert>
+    <div class="project-topbar"><button id="project-back" type="button">← RETOUR À LA NATURE</button><div class="project-top-meta">STRATE / D2 / DESIGN DE PRODUIT &nbsp; · &nbsp; DOSSIER 09 PAGES</div></div>
+    <div class="project-hero">
+      <img src="./Portfolio%20Carte%20Assets/hotel-cigales/in-situ.webp" alt="Photomontage de l’hôtel à pontes sur une place de Pernes-les-Fontaines">
+      <div class="project-hero-copy"><div class="project-eyebrow">PROJET 01 &nbsp; / &nbsp; FAUNE LOCALE &nbsp; / &nbsp; PERNES-LES-FONTAINES</div><h1>Hôtel <span>à Cigales</span></h1><p>Un refuge vertical pour rendre visible la vie locale et rapprocher le village de sa biodiversité.</p></div>
+      <div class="project-hero-index">DESIGN DE PRODUIT · PRADIER NOÉ</div>
+    </div>
+    <div class="project-anchorbar"><a href="#project-intention">INTENTION</a><a href="#project-observation">CONSTAT</a><a href="#project-forme">OBJET</a><a href="#project-plan">PLAN</a><a href="#project-maquette">MAQUETTE</a><a href="#project-sources">DOSSIER</a></div>
+    <div class="project-page-content">
+      <section class="project-intro" id="project-intention">
+        <div><div class="project-section-kicker">L’INTENTION</div><h2>La nature locale comme point de départ.</h2></div>
+        <div class="project-intro-copy">À Pernes-les-Fontaines, l’Hôtel à Cigales transforme un mobilier public en refuge visible pour la biodiversité locale.<div class="project-facts"><div class="project-fact"><b>DISCIPLINE</b><span>DESIGN DE PRODUIT</span></div><div class="project-fact"><b>LIEU</b><span>PERNES-LES-FONTAINES</span></div><div class="project-fact"><b>SUJET</b><span>BIODIVERSITÉ LOCALE</span></div></div></div>
+      </section>
+      <section class="project-section" id="project-observation">
+        <div class="project-section-title"><div class="project-section-num">01 / CONSTAT</div><h2>Rendre proche ce qui paraît lointain.</h2></div>
+        <p class="project-section-lede">Le projet part d’un constat simple : la biodiversité proche reste souvent invisible.</p>
+        <div class="project-problem-grid"><article class="project-problem"><span>01 — PERCEPTION</span><p>La faune locale est peu remarquée.</p></article><article class="project-problem"><span>02 — ACTION</span><p>L’action paraît souvent lointaine.</p></article><article class="project-problem"><span>03 — PROXIMITÉ</span><p>Le vivant manque dans l’espace public.</p></article></div>
+        <div class="project-question">Comment protéger et conserver les écosystèmes endémiques des régions&nbsp;?</div>
+      </section>
+      <section class="project-section" id="project-forme">
+        <div class="project-section-title"><div class="project-section-num">02 / OBJET</div><h2>Un hôtel habité par le paysage.</h2></div>
+        <div class="project-feature"><div class="project-feature-copy"><div class="project-section-kicker">LE DISPOSITIF</div><p>Un refuge vertical, des strates plantées et un repère public pour faire découvrir la faune locale.</p></div><figure class="project-feature-image"><img src="./Portfolio%20Carte%20Assets/hotel-cigales/object.webp" alt="Vue 3D de la structure végétalisée de l’Hôtel à Cigales"><figcaption>VUE D’ENSEMBLE · STRUCTURE ET STRATES VÉGÉTALISÉES</figcaption></figure></div>
+        <div class="project-visual-grid"><figure><img src="./Portfolio%20Carte%20Assets/hotel-cigales/detail.webp" alt="Détail des strates végétales et de la structure de l’objet"><figcaption>MATIÈRE, VÉGÉTATION ET STRATES D’ACCUEIL</figcaption></figure><figure><img src="./Portfolio%20Carte%20Assets/hotel-cigales/cicada.webp" alt="Gros plan sur une cigale posée dans les branches"><figcaption>ZOOM · LA CIGALE AU CŒUR DU DISPOSITIF</figcaption></figure><figure><img src="./Portfolio%20Carte%20Assets/hotel-cigales/rapace-visiteur.jpg" alt="Rapace en vol au-dessus du feuillage de l’hôtel à Cigales" loading="lazy"><figcaption>UN VISITEUR AILÉ · LE DISPOSITIF COMME REFUGE DU VIVANT</figcaption></figure></div>
+
+      </section>
+      <section class="project-section" id="project-plan">
+        <div class="project-section-title"><div class="project-section-num">03 / ÉTUDE</div><h2>Du volume au plan.</h2></div>
+        <div class="project-plan"><figure><img src="./Portfolio%20Carte%20Assets/hotel-cigales/plan.webp" alt="Plan technique de l’Hôtel à Cigales, vues en plan et en élévation"><figcaption>PLAN TECHNIQUE · VUES EN PLAN ET EN ÉLÉVATION</figcaption></figure><div><div class="project-section-kicker">MISE AU POINT</div><p>Le plan fixe les dimensions et l’organisation des niveaux avant la fabrication.</p></div></div>
+      </section>
+      <section class="project-section" id="project-maquette">
+        <div class="project-section-title"><div class="project-section-num">04 / MAQUETTE</div><h2>Tester la silhouette.</h2></div>
+        <p class="project-section-lede">Deux maquettes pour tester le volume, les proportions et les niveaux.</p>
+        <div class="project-maquette-grid"><figure><img src="./Portfolio%20Carte%20Assets/hotel-cigales/model-study.webp" alt="Maquette physique de l’hôtel à pontes, vue de face"><figcaption>MAQUETTE · VOLUME ET PROPORTIONS</figcaption></figure><figure><img src="./Portfolio%20Carte%20Assets/hotel-cigales/model.webp" alt="Maquette physique de l’hôtel à pontes, vue rapprochée"><figcaption>MAQUETTE · DÉTAIL DE LA STRUCTURE</figcaption></figure></div>
+      </section>
+      <section class="project-section" id="project-sources">
+        <div class="project-section-title"><div class="project-section-num">07 / DOSSIER</div><h2>Explorer les sources.</h2></div>
+        <div class="project-resources"><a class="project-resource" href="./Strate/D2/Produit/Rendu%20final%20produit/Initiation%20Produit%20D2.pdf" target="_blank" rel="noopener"><span>09 PAGES · DOSSIER DE PROJET</span><b>Lire le dossier complet ↗</b></a><a class="project-resource" href="./Strate/D2/Produit/Rendu%20final%20produit/Protection%20animale.pdf" target="_blank" rel="noopener"><span>46 PAGES · RECHERCHE</span><b>Consulter l’étude amont ↗</b></a><a class="project-resource" href="./Strate/D2/Produit/Rendu%20final%20produit/ProduitD2%20Changmenet%20de%20taille.blend" download><span>82 MO · FICHIER SOURCE</span><b>Récupérer le modèle Blender ↗</b></a><a class="project-resource" href="./Strate/D2/Produit/Produit%20logo%20etc/Logog%20hotel%20a%20pontes.ai" download><span>IDENTITÉ VISUELLE · .AI</span><b>Récupérer le logo vectoriel ↗</b></a><a class="project-resource" href="./Strate/D2/Produit/Produit%20logo%20etc/Plan%20Produit%202.ai" download><span>PLAN TECHNIQUE · .AI</span><b>Récupérer le plan vectoriel ↗</b></a><a class="project-resource" href="./Strate/D2/Produit/Rendu%20final%20produit/ProduitD2.blend" download><span>MODÈLE 3D · FICHIER BLENDER</span><b>Ouvrir la version de travail ↗</b></a><a class="project-resource" href="./Strate/D2/Produit/Rendu%20final%20produit/Impresision%20PRODUIT%20DECOUPE.ai" download><span>FABRICATION · DÉCOUPE</span><b>Récupérer le fichier de découpe ↗</b></a></div>
+        <div class="project-endmark">PRADIER NOÉ &nbsp; / &nbsp; PROJET NATURE 01</div>
+      </section>
+    </div>
+  </section>
+  <section id="eco-project-page" aria-label="Projet Éco-design : canard de Barbarie" aria-hidden="true" inert>
+    <div class="project-topbar"><button id="eco-project-back" type="button">← RETOUR À LA NATURE</button><div class="project-top-meta">STRATE / D2 / ÉCO-DESIGN &nbsp; · &nbsp; PROJET 02</div></div>
+    <div class="project-hero">
+      <img src="./Portfolio%20Carte%20Assets/ecodesign/habitat-vue-large.png" alt="Rendu du refuge circulaire au milieu d’une rizière, entouré d’oiseaux">
+      <div class="project-hero-copy"><div class="project-eyebrow">PROJET 02 &nbsp; / &nbsp; ÉCO-DESIGN &nbsp; / &nbsp; ENQUÊTE ET CONCEPTION</div><h1>Canard <span>de Barbarie</span></h1><p>Remonter la chaîne d’un produit en duvet pour comprendre ses liens au vivant, puis imaginer d’autres façons de cohabiter.</p></div>
+      <div class="project-hero-index">RECHERCHE · ANALYSE · CONCEPT</div>
+    </div>
+    <div class="project-anchorbar"><a href="#eco-enquete">ENQUÊTE</a><a href="#eco-cycle">CYCLE DE VIE</a><a href="#eco-vivant">VIVANT</a><a href="#eco-communaute">COMMUNAUTÉS</a><a href="#eco-pistes">PISTES</a><a href="#eco-sources">DOSSIER</a></div>
+    <div class="project-page-content">
+      <section class="project-intro" id="eco-enquete">
+        <div><div class="project-section-kicker">L’ENQUÊTE</div><h2>Rendre visible ce que le produit cache.</h2></div>
+        <div class="project-intro-copy">Le point de départ est un surmatelas en duvet et plumes de canard de Barbarie. L’étude suit sa matière, de l’élevage à la fin de vie, et met en regard le confort vendu, les milieux mobilisés et les êtres vivants concernés.<div class="project-facts"><div class="project-fact"><b>OBJET ÉTUDIÉ</b><span>SURMATELAS CASTEX</span></div><div class="project-fact"><b>GARNISSAGE</b><span>DUVET ET PLUMETTES</span></div><div class="project-fact"><b>ANGLE</b><span>INTERDÉPENDANCES DU VIVANT</span></div></div></div>
+      </section>
+      <section class="project-section" id="eco-cycle">
+        <div class="project-section-title"><div class="project-section-num">01 / ANALYSE</div><h2>Suivre la matière sur tout son cycle.</h2></div>
+        <p class="eco-analysis-lede">La recherche ne s’arrête pas à la plume. Elle relie les ressources, les lieux de production, les conditions de travail et les possibilités de séparation des matières.</p>
+        <div class="eco-lifecycle">
+          <article class="eco-cycle-step"><b>01 · ÉLEVAGE</b><h3>La matière animale</h3><p>Élevages du Sud-Ouest, alimentation, abreuvement et gestion des fientes. Des rejets mal maîtrisés peuvent enrichir les eaux en nutriments et favoriser les algues.</p></article>
+          <article class="eco-cycle-step"><b>02 · TRANSFORMATION</b><h3>L’étape sensible</h3><p>À la manufacture, les plumes sont lavées, séchées, stérilisées et triées. Le dossier repère ici les besoins d’eau et de chaleur, ainsi que l’exposition des équipes aux poussières de kératine.</p></article>
+          <article class="eco-cycle-step"><b>03 · UTILISATION</b><h3>Un isolant passif</h3><p>Le duvet apporte chaleur et légèreté sans énergie pendant l’usage. La distribution ajoute toutefois des trajets entre la fabrication et les clients.</p></article>
+          <article class="eco-cycle-step"><b>04 · FIN DE VIE</b><h3>Séparer pour valoriser</h3><p>La plume peut rejoindre des filières organiques, mais le garnissage et son enveloppe en coton ne suivent pas les mêmes voies de tri.</p></article>
+        </div>
+        <p class="eco-method-note">Les impacts chiffrés du dossier sont des estimations à consolider selon l’origine des matières et les règles d’allocation. La page met en avant les postes et les relations observés, sans présenter ces ordres de grandeur comme une ACV vérifiée.</p>
+      </section>
+      <section class="project-section" id="eco-vivant">
+        <div class="project-section-title"><div class="project-section-num">02 / VIVANT</div><h2>Qui est impliqué, qui reste invisible&nbsp;?</h2></div>
+        <p class="project-section-lede">L’analyse distingue le canard comme individu, l’espèce dans son écosystème et la plume comme ressource économique. Elle questionne aussi le récit commercial qui montre le confort du duvet, mais peu son origine et ses conditions de production.</p>
+        <div class="project-problem-grid"><article class="project-problem"><span>ESPÈCE ET MILIEU</span><p>Le canard de Barbarie est associé aux zones humides, aux rivières et aux marécages. Le dossier étudie les écarts entre cet habitat et les systèmes d’élevage.</p></article><article class="project-problem"><span>RÔLE ÉCOLOGIQUE</span><p>Régulation de petits organismes, dispersion de graines et liens avec la qualité des milieux aquatiques : le canard ne se résume pas à sa matière première.</p></article><article class="project-problem"><span>RÉCIT DE MARQUE</span><p>La douceur et le caractère « naturel » du duvet sont mis en avant, tandis que l’élevage et les autres vivants de la filière restent hors champ.</p></article></div>
+        <div class="project-question">Comment concevoir avec le vivant sans le réduire à une ressource&nbsp;?</div>
+      </section>
+      <section class="project-section" id="eco-communaute">
+        <div class="project-section-title"><div class="project-section-num">03 / COMMUNAUTÉS</div><h2>Cartographier les liens humains.</h2></div>
+        <p class="project-section-lede">La plume relie des territoires et des métiers. Le dossier suit aussi le coton de l’enveloppe et interroge la visibilité de ses provenances.</p>
+        <div class="eco-lifecycle">
+          <article class="eco-cycle-step"><b>ÉLEVAGE ET ABATTAGE</b><h3>Sud-Ouest</h3><p>Éleveurs, salariés d’abattoirs et communautés rurales dépendent de la filière ; l’étude relève des enjeux de santé animale, de qualité de l’eau et de conditions d’élevage.</p></article>
+          <article class="eco-cycle-step"><b>FABRICATION</b><h3>Dax</h3><p>Les équipes de transformation lavent, trient et préparent le duvet. La recherche prend en compte les poussières, la ventilation et la chaleur des procédés.</p></article>
+          <article class="eco-cycle-step"><b>ENVELOPPE</b><h3>Coton et provenance</h3><p>Les notes relient le coton à plusieurs bassins de production et soulèvent des questions de traçabilité, de travail et d’héritages d’exploitation.</p></article>
+          <article class="eco-cycle-step"><b>DISTRIBUTION ET TRI</b><h3>Après l’achat</h3><p>Transporteurs, clients et filières de traitement interviennent ensuite. Le mélange coton-plume complique la séparation en fin de vie.</p></article>
+        </div>
+        <div class="project-question">La conception peut-elle rendre ces dépendances plus justes et plus lisibles&nbsp;?</div>
+      </section>
+      <section class="project-section" id="eco-pistes">
+        <div class="project-section-title"><div class="project-section-num">04 / PISTES</div><h2>Deux concepts issus de l’enquête.</h2></div>
+        <p class="project-section-lede">La recherche débouche sur deux réponses différentes : agir sur l’eau grâce au biomimétisme, ou restaurer un habitat qui manque au canard dans les zones cultivées.</p>
+        <div class="eco-concepts">
+          <article class="eco-concept"><div class="eco-concept-copy"><div class="project-section-kicker">CONCEPT 01 · BIOMIMÉTISME</div><h3>Filtrer par compression</h3><p>Les lamelles du bec inspirent une membrane qui retient les sédiments. La poignée replie le filtre et chasse l’eau vers la paroi du récipient. Cette piste transforme un mécanisme observé en outil.</p></div><figure><img src="./Portfolio%20Carte%20Assets/ecodesign/filtration-en-situation.png" alt="Mise en situation du filtre biomimétique dans l’eau, avec ses différentes étapes d’usage" loading="lazy"><figcaption>USAGE · PRÉLEVER, FILTRER, RELÂCHER L’EAU</figcaption></figure><figure class="eco-object-photo"><img src="./Portfolio%20Carte%20Assets/ecodesign/filtre-biomimetique.png" alt="Vue du filtre à compression inspiré du bec de canard" loading="lazy"><figcaption>OBJET · MEMBRANE ET POIGNÉE DE COMPRESSION</figcaption></figure></article>
+          <article class="eco-concept"><div class="eco-concept-copy"><div class="project-section-kicker">CONCEPT 02 · AGROÉCOLOGIE</div><h3>Réinstaller un refuge</h3><p>Un tronc creusé, traversant et posé sur une plateforme de bambou offre un abri dans les rizières. Les lianes le camouflent et la double issue facilite la fuite.</p></div><figure><img src="./Portfolio%20Carte%20Assets/ecodesign/habitat-avec-canards.png" alt="Habitat circulaire en bambou et tronc creusé, au milieu des canards" loading="lazy"><figcaption>MISE EN SITUATION · ABRI ET VIE DE LA RIZIÈRE</figcaption></figure><figure><img src="./Portfolio%20Carte%20Assets/ecodesign/habitat-detail.png" alt="Détail du refuge circulaire et des lianes suspendues" loading="lazy"><figcaption>DÉTAIL · SEUIL CAMOUFLÉ ET STRUCTURE SURÉLEVÉE</figcaption></figure></article>
+        </div>
+        <div class="eco-selection"><span>ARBITRAGE · CONCEPT RETENU</span>Le refuge répond plus directement à la question des besoins du canard et de la cohabitation avec la culture. Le projet déplace ainsi le regard : de l’exploitation d’une matière vers la qualité d’un habitat partagé.</div>
+      </section>
+      <section class="project-section" id="eco-sources">
+        <div class="project-section-title"><div class="project-section-num">05 / SOURCES</div><h2>Consulter le travail de recherche.</h2></div>
+        <div class="project-resources"><a class="project-resource" href="./Portfolio%20Carte%20Assets/ecodesign/recherche-eco-design.docx" download><span>DOCUMENT DE RECHERCHE · DOCX</span><b>Télécharger les notes complètes ↗</b></a><a class="project-resource" href="./Portfolio%20Carte%20Assets/ecodesign/dossier-canard-de-barbarie.pdf" target="_blank" rel="noopener"><span>15 PAGES · DOSSIER ÉCO-DESIGN</span><b>Lire le dossier complet ↗</b></a></div>
+        <div class="project-endmark">PRADIER NOÉ · EDGAR DUVERT · LILY CERRILLOS &nbsp; / &nbsp; PROJET NATURE 02</div>
+      </section>
+    </div>
+  </section>
+
+  <section id="city-project-page" aria-label="Exploration critique de l’Eden Project" aria-hidden="true" inert>
+    <div class="project-topbar"><button id="city-project-back" type="button">← RETOUR À LA VILLE</button><div class="project-top-meta">STRATE / D1 / EXPLORATION CRITIQUE &nbsp; · &nbsp; PROJET 01</div></div>
+    <div class="project-hero">
+      <img src="./Portfolio%20Carte%20Assets/eden-project/eden-project-biomes.jpeg" alt="Les biomes géodésiques de l’Eden Project dans une ancienne carrière de Cornouailles">
+      <div class="project-hero-copy"><div class="project-eyebrow">PROJET 01 &nbsp; / &nbsp; EXPLORATION CRITIQUE &nbsp; / &nbsp; CORNOUAILLES</div><h1>Eden <span>Project</span></h1><p>Un écosystème sous dôme : entre régénération, expérience immersive et mise en scène du vivant.</p></div>
+      <div class="project-hero-index">OBSERVATION · ANALYSE · POSITION</div>
+    </div>
+    <div class="project-anchorbar"><a href="#eden-contexte">CONTEXTE</a><a href="#eden-pdf">DOSSIER PDF</a><a href="#eden-dispositif">DISPOSITIF</a><a href="#eden-tensions">TENSIONS</a><a href="#eden-experience">EXPÉRIENCE</a><a href="#eden-position">POSITION</a><a href="#eden-sources">SOURCES</a></div>
+    <div class="project-page-content">
+      <section class="project-intro" id="eden-contexte">
+        <div><div class="project-section-kicker">LE SUJET</div><h2>Quand la nature devient architecture.</h2></div>
+        <div class="project-intro-copy">Inauguré en 2001 dans une ancienne carrière d’argile en Cornouailles, l’Eden Project rassemble sous plusieurs dômes des biomes tropicaux et méditerranéens. Cette exploration interroge la relation qu’il construit entre humains et non-humains : protéger des milieux, mais aussi les rendre accessibles, lisibles et visitables.<div class="project-facts"><div class="project-fact"><b>PROJET</b><span>EDEN PROJECT</span></div><div class="project-fact"><b>ARCHITECTURE</b><span>NICHOLAS GRIMSHAW</span></div><div class="project-fact"><b>ANGLE</b><span>COHABITATION AVEC LE VIVANT</span></div></div></div>
+      </section>
+      <section class="project-section" id="eden-pdf">
+        <div class="project-section-title"><div class="project-section-num">DOSSIER / 04 PAGES</div><h2>Le texte et sa mise en page.</h2></div>
+        <div class="eden-pdf-head"><p>Dossier illustré de quatre pages présentant l’analyse de l’Eden Project, de ses biomes et des tensions entre conservation du vivant, mise en scène touristique et accessibilité.</p><div class="eden-pdf-actions"><a href="./Portfolio%20Carte%20Assets/eden-project/eden-project-noe-pradier.pdf" target="_blank" rel="noopener">OUVRIR EN GRAND ↗</a><a href="./Portfolio%20Carte%20Assets/eden-project/eden-project-noe-pradier.pdf" download>TÉLÉCHARGER LE PDF ↓</a></div></div>
+        <iframe class="eden-pdf-frame" src="./Portfolio%20Carte%20Assets/eden-project/eden-project-noe-pradier.pdf#view=FitH" title="Dossier illustré Eden Project de Noé Pradier" loading="lazy"></iframe>
+        <p class="eden-pdf-fallback">En cas d’aperçu indisponible, le dossier PDF reste accessible <a href="./Portfolio%20Carte%20Assets/eden-project/eden-project-noe-pradier.pdf" target="_blank" rel="noopener">dans un nouvel onglet</a>.</p>
+      </section>
+      <section class="project-section" id="eden-dispositif">
+        <div class="project-section-title"><div class="project-section-num">01 / DISPOSITIF</div><h2>Recréer des climats, contenir des mondes.</h2></div>
+        <p class="project-section-lede">La structure modulaire s’inscrit dans le creux de l’ancienne carrière. Les dômes assemblent des cellules géodésiques et une enveloppe en ETFE pour accueillir des atmosphères éloignées du climat local.</p>
+        <div class="eden-visual-grid"><figure><img src="./Portfolio%20Carte%20Assets/eden-project/biome-lumiere.jpeg" alt="Végétation tropicale cadrée par la structure du dôme" loading="lazy"><figcaption>LA TRAME DU DÔME DEVIENT UN CADRE POUR LE VÉGÉTAL</figcaption></figure><figure><img src="./Portfolio%20Carte%20Assets/eden-project/biome-tropical.jpeg" alt="Végétation dense et eau sous la couverture du biome tropical" loading="lazy"><figcaption>BIOME TROPICAL · UNE ATMOSPHÈRE ARTIFICIELLEMENT MAINTENUE</figcaption></figure></div>
+        <div class="project-problem-grid" style="margin:18px 0 0"><article class="project-problem"><span>FORME</span><p>La géométrie alvéolaire rend la grande portée visuellement légère et répétable.</p></article><article class="project-problem"><span>MATIÈRE</span><p>La structure associe acier, fondations en béton et coussins multicouches en ETFE.</p></article><article class="project-problem"><span>CLIMAT</span><p>Température, humidité, lumière et végétation sont réglées pour différencier les biomes.</p></article></div>
+      </section>
+      <section class="project-section" id="eden-tensions">
+        <div class="project-section-title"><div class="project-section-num">02 / ANALYSE</div><h2>Les contradictions du projet.</h2></div>
+        <p class="project-section-lede">L’Eden Project régénère un terrain dégradé et sensibilise à la biodiversité. Mais cette ambition repose sur un milieu construit, entretenu et parcouru selon des règles.</p>
+        <div class="project-problem-grid" style="margin-left:0"><article class="project-problem"><span>RÉGÉNÉRATION / ÉNERGIE</span><p>La carrière retrouve une fonction fertile. En contrepartie, maintenir des biomes tropicaux et méditerranéens sous le climat anglais demande une régulation énergétique continue.</p></article><article class="project-problem"><span>PROTECTION / CONTRÔLE</span><p>Les plantes sont préservées dans des conditions maîtrisées. Leur croissance et leur cycle restent ainsi liés au maintien de l’expérience de visite.</p></article><article class="project-problem"><span>SENSIBILISATION / SPECTACLE</span><p>Les espèces deviennent visibles, mais le parcours balisé, les points photo et les commerces peuvent rapprocher le lieu d’un décor touristique.</p></article></div>
+        <p class="eco-method-note" style="margin-left:0">Le dossier d’avril 2025 rapporte une réduction annoncée de 500 tonnes de CO₂ par an grâce au chauffage géothermique ; le besoin énergétique des biomes reste néanmoins l’un des points de tension de l’analyse.</p>
+      </section>
+      <section class="project-section" id="eden-experience">
+        <div class="project-section-title"><div class="project-section-num">03 / EXPÉRIENCE</div><h2>Un parcours commun face à des regards singuliers.</h2></div>
+        <p class="project-section-lede">L’immersion mobilise les sens — chaleur, humidité, sons, odeurs et lumière — pour faire voyager d’un biome à l’autre. Pourtant, le chemin défini et ses points de vue orientent la visite et tendent à produire une expérience similaire pour tous.</p>
+        <div class="project-problem-grid" style="margin-left:0"><article class="project-problem"><span>CE QUE LE LIEU OUVRE</span><p>Une rencontre concrète avec des plantes et des climats rarement accessibles dans la région.</p></article><article class="project-problem"><span>CE QUE LE PARCOURS CADRE</span><p>Des étapes, explications et vues préparées qui limitent la déambulation et la découverte imprévue.</p></article><article class="project-problem"><span>QUI PEUT EN PROFITER&nbsp;?</span><p>La distance, le coût et les conditions de déplacement interrogent l’accessibilité réelle du lieu.</p></article></div>
+        <div class="eden-thesis"><span>QUESTION D’ANALYSE</span>Comment sensibiliser au vivant sans transformer sa découverte en parcours entièrement scénarisé&nbsp;?</div>
+      </section>
+      <section class="project-section" id="eden-position">
+        <div class="project-section-title"><div class="project-section-num">04 / POSITION</div><h2>Préserver sans figer le vivant.</h2></div>
+        <div class="project-feature"><div class="project-feature-copy"><div class="project-section-kicker">LECTURE CRITIQUE</div><p>L’Eden Project porte une tension féconde : il rend la biodiversité visible et réactive un site abîmé, tout en contrôlant les conditions et les gestes qui organisent cette rencontre. L’enjeu n’est pas d’effacer l’intervention humaine, mais de laisser davantage de place aux rythmes du vivant, aux parcours singuliers et à des publics variés.</p></div><figure class="project-feature-image"><img src="./Portfolio%20Carte%20Assets/eden-project/eden-project-biomes.jpeg" alt="Les dômes de l’Eden Project intégrés au relief de l’ancienne carrière"><figcaption>LE PAYSAGE EST RÉINVESTI, MAIS L’EXPÉRIENCE DU VIVANT RESTE CADRÉE</figcaption></figure></div>
+      </section>
+      <section class="project-section" id="eden-sources">
+        <div class="project-section-title"><div class="project-section-num">05 / DOSSIER</div><h2>Lire les recherches et les références.</h2></div>
+        <div class="project-resources"><a class="project-resource" href="./Portfolio%20Carte%20Assets/eden-project/exploration-critique.docx" download><span>TEXTE D’ANALYSE · DOCX</span><b>Télécharger l’exploration critique ↗</b></a><a class="project-resource" href="./Portfolio%20Carte%20Assets/eden-project/eden-project-noe-pradier.pdf" target="_blank" rel="noopener"><span>4 PAGES · DOSSIER EDEN PROJECT</span><b>Parcourir le dossier illustré ↗</b></a><a class="project-resource" href="./Portfolio%20Carte%20Assets/eden-project/grille-exploration-critique.pdf" target="_blank" rel="noopener"><span>14 PAGES · GRILLE DE RECHERCHE D1</span><b>Voir le champ d’exploration complet ↗</b></a><a class="project-resource" href="https://www.edenproject.com" target="_blank" rel="noopener"><span>RÉFÉRENCE DU PROJET</span><b>Visiter le site de l’Eden Project ↗</b></a></div>
+        <div class="project-endmark">PRADIER NOÉ &nbsp; / &nbsp; VILLE 01 · EXPLORATION CRITIQUE</div>
+      </section>
+    </div>
+  </section>
+  </div>
+  </div>
+  <section id="about-page" aria-label="À propos de Noé Pradier">
+    <div class="about-topline"><button id="about-back" type="button">↑ RETOUR À L’ÎLE</button><span>À PROPOS / PRADIER NOÉ</span></div>
+    <div class="about-content">
+      <div class="about-main">
+        <div class="about-copy"><div class="about-kicker">DESIGN · VIVANT · USAGES</div><h1>Noé<br><em>Pradier.</em></h1><p class="about-role">Designer · Strate / D1—D2</p><p class="about-bio">Je m’intéresse aux liens entre les usages, les lieux et le vivant. J’observe ces relations pour imaginer des formes et des expériences qui les rendent plus attentives.</p></div>
+        <div class="about-photo" role="img" aria-label="Emplacement prévu pour une photo portrait de Noé Pradier"><div class="about-photo-label"><span>PORTRAIT</span><span>01 / NOÉ PRADIER</span></div><div class="about-photo-mark" aria-hidden="true"></div><div class="about-photo-note">PHOTO À AJOUTER</div></div>
+      </div>
+      <div class="about-vision"><span>VISION DU DESIGN</span><p>Le design peut rendre visibles nos liens au vivant et ouvrir des manières plus attentives d’habiter le monde.</p></div>
+    </div>
+    <div class="about-original" aria-label="Présentation d’origine">
+      <div class="about-original-content">
+        <div class="about-original-kicker"><span>DESIGN · VIVANT · USAGES</span><span>STRATE / D1 — D2</span></div>
+        <div class="about-original-hero"><h2>Créer<br><em>avec</em> le<br>vivant.</h2><div class="about-original-intro"><div class="about-original-label">NOÉ PRADIER · DESIGNER</div><p>Je m’appelle Noé Pradier. Mon approche du design commence par l’observation : un lieu, un geste, une espèce, les ressources qui rendent un objet possible.</p><p>Avant de dessiner une réponse, je cherche à comprendre les relations déjà présentes. J’explore ensuite comment une forme ou un usage peut les rendre plus lisibles et ouvrir d’autres manières d’habiter le monde.</p></div></div>
+        <div class="about-original-method"><article><span>01 / OBSERVER</span><h3>Partir du réel.</h3><p>Lire un territoire, ses usages et ses rythmes avant d’intervenir.</p></article><article><span>02 / COMPRENDRE</span><h3>Relier les éléments.</h3><p>Enquêter sur les matières, les acteurs et les conséquences d’un projet.</p></article><article><span>03 / TRADUIRE</span><h3>Donner forme.</h3><p>Transformer les questions en objets, espaces ou expériences à éprouver.</p></article></div>
+        <div class="about-original-position"><div class="about-original-position-label">POSITION / DESIGN</div><p>Je me positionne à la rencontre du vivant et des usages quotidiens. Le design peut rendre visibles nos dépendances et imaginer des relations plus attentives, sans chercher à figer le monde qu’il transforme.</p></div>
+        <div class="about-original-signoff"><span>PROJETS · D1 / D2 · STRATE</span><span>OBSERVER LE MONDE, PUIS Y PRENDRE PART.</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+<script>
+(()=>{
+/* ====== TES CONTENUS ====== */
+const ZONES={
+ nature:{pos:[-19,6],tag:'▲ LA NATURE',gps:'44°06′N 5°16′E',title:'La Nature',desc:"Observer le vivant, comprendre comment il dure, et le traduire en design.",
+  projects:[{t:'Projet nature 01',d:'Description courte.'},{t:'Habitat circulaire',d:'Un refuge pour le canard de Barbarie au cœur des rizières.'},{t:'Projet nature 03',d:'Description courte.'}]},
+ city:{pos:[19,5],tag:'■ LA VILLE',gps:'45°45′N 4°50′E',title:'La Ville',desc:"Concevoir des espaces où l'humain et le vivant cohabitent.",
+  projects:[{t:'Eden Project',d:'Une exploration critique entre régénération, tourisme et mise en scène du vivant.'},{t:'Projet ville 02',d:'Description courte.'},{t:'Projet ville 03',d:'Description courte.'}]},
+ home:{pos:[3,-12],tag:'⌂ LA MAISON',gps:'44°00′N 5°04′E',title:'La Maison de campagne',desc:"Mes projets personnels : mon Vinland, mes expériences, mes jeux.",
+  projects:[{t:'Projet perso 01',d:'Description courte.'},{t:'Projet perso 02',d:'Description courte.'},{t:'Projet perso 03',d:'Description courte.'}]}};
+const PAGES={
+ about:{title:'Laboratoire',desc:"La nature est le centre de tout. Je travaille avec elle, pour elle et pour nous : je m'en inspire, je la regarde, je la traduis.<br><br>Je ne veux pas rester figé."},
+ contact:{title:'Contact',desc:"Adresse e-mail à renseigner."}};
+/* ========================== */
+const openedProjects=new Set();
+const projectTotal=Object.values(ZONES).reduce((n,z)=>n+z.projects.length,0);
+
+let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647;
+const sm=(a,b,x)=>{x=Math.min(1,Math.max(0,(x-a)/(b-a)));return x*x*(3-2*x)};
+const dd=(x,z,p)=>Math.hypot(x-p[0],z-p[1]);
+const N=ZONES.nature.pos,C=ZONES.city.pos,Hm=ZONES.home.pos,L=[-10,1],R=26,EX=1.35,FY=1.2,WM=[Hm[0]-7,Hm[1]-1],RV=[[-16,13],[-14,8],[-11,3],[-9,-4],[-12,-10],[-15,-17],[-17,-27]];
+const dseg=(x,z,a,b)=>{const vx=b[0]-a[0],vz=b[1]-a[1],t=Math.max(0,Math.min(1,((x-a[0])*vx+(z-a[1])*vz)/(vx*vx+vz*vz)));return Math.hypot(x-a[0]-t*vx,z-a[1]-t*vz)};
+const dRV=(x,z)=>{let m=99;for(let i=0;i<RV.length-1;i++)m=Math.min(m,dseg(x,z,RV[i],RV[i+1]));return m};
+function hy(x,z){let h=.8+.8*Math.sin(x*.13+1)*Math.cos(z*.11)+.35*Math.sin(x*.4+z*.3);
+ h+=6*Math.exp(-((x+23)**2+(z-11)**2)/22)+5*Math.exp(-((x+15)**2+(z-14)**2)/16)+3.4*Math.exp(-((x+6)**2+(z-15)**2)/14);
+ h+=(FY-h)*sm(11,7,dd(x,z,C));h+=(FY-h)*sm(9,5.5,dd(x,z,Hm));h+=(.35-h)*sm(5.5,3.4,dd(x,z,L));h-=.55*Math.exp(-(dRV(x,z)**2)/2.2);return h}
+const Rr=a=>R*(1+.08*Math.sin(a*3+1)+.05*Math.sin(a*5+2)+.025*Math.sin(a*7-.8)+.035*Math.cos(a*2+.6));
+const inside=(x,z,k=.92)=>{const u=x/EX;return Math.hypot(u,z)<Rr(Math.atan2(z,u))*k};
+const DEN=innerWidth<700?.55:1,PSZ=DEN<1?1.3:1;
+const PX=[],PY=[],PZ=[],PR=[],PG=[],PB=[],PS=[];
+const add=(x,y,z,r,g,b,s)=>{PX.push(x);PY.push(y);PZ.push(z);PR.push(Math.min(255,r*255));PG.push(Math.min(255,g*255));PB.push(Math.min(255,b*255));PS.push(s*PSZ)};
+const GR=[.36,.86,.3];
+// surface : forêt / montagne / ville / champs
+for(let i=0;i<78000*DEN;i++){const a=rnd()*6.283,r=Math.sqrt(rnd())*Rr(a),x=EX*r*Math.cos(a),z=r*Math.sin(a),y=hy(x,z),coast=Rr(a)-r;
+ const gx=hy(x+.5,z)-hy(x-.5,z),gz=hy(x,z+.5)-hy(x,z-.5),sh=.45+.65*Math.max(0,(.4*gx+.8-.45*gz)/Math.hypot(gx,1,gz));
+ const dc=dd(x,z,C),dh=dd(x,z,Hm),dn_=dd(x,z,N);let c;
+ if(y>5)c=[.95,.96,1];else if(y>3.6)c=[.55,.55,.55];
+ else if(dc<9)c=[.6,.6,.62];
+ else if(dh<10&&dh>3.5&&z<Hm[1]+9){const q=(Math.floor(x/2.4)*7+Math.floor(z/2.4)*13)&3,row=.82+.18*Math.sin((q&1?x:z)*4);
+  c=[[.4,.78,.25],[.78,.74,.3],[.3,.62,.22],[.46,.36,.26]][q].map(v=>v*row)}
+ else if(dn_<14){const g=.5+.5*sm(14,8,dn_);c=[.4-.04*g,.45+.4*g,.35-.1*g]}
+ else{const g=Math.max(0,Math.min(1,.6+.5*Math.sin(x*.25)*Math.sin(z*.2)));c=[.46+(.36-.46)*g,.46+(.8-.46)*g,.44+(.3-.44)*g]}
+ if(coast<1.15&&y<2.4)c=[.55,.53,.42];
+ const j=.88+rnd()*.24;add(x,y,z,c[0]*sh*j*1.2,c[1]*sh*j*1.2,c[2]*sh*j*1.2,.08)}
+// dessous flottant en pointe
+for(let i=0;i<22000*DEN;i++){const a=rnd()*6.283,u=Math.pow(rnd(),.8),e=Rr(a),rr=e*(1-.86*Math.pow(u,1.15))*(1-rnd()*.03),
+ y=hy(EX*Math.cos(a)*e*.96,Math.sin(a)*e*.96)-u*22-rnd()*.4,band=.65+.35*Math.sin(y*4.5+a*3),l=(.9-.65*u)*band*(.7+rnd()*.5);
+ add(EX*Math.cos(a)*rr,y,Math.sin(a)*rr,l*.9,l*.85,l*.78,.11)}
+for(let i=0;i<16;i++){const a=rnd()*6.283,r=Rr(a)*(.1+rnd()*.45),x=EX*r*Math.cos(a),z=r*Math.sin(a),y0=-5-rnd()*5,len=3+rnd()*7;
+ for(let k=0;k<len;k+=.18){const w=(1-k/len)*.5,q=rnd()*6.283,l=.34*(1-k/len*.6);add(x+Math.cos(q)*w,y0-k,z+Math.sin(q)*w,l,l*.95,l*.9,.09)}}
+// lignes de niveau sur la crête
+const peaks=[[-23,11],[-15,14],[-6,15]];
+peaks.forEach(([cx,cz],pi)=>{for(let band=2.2;band<=5.2;band+=1){for(let a=0;a<6.283;a+=.19){const x=cx+Math.cos(a)*band*1.15,z=cz+Math.sin(a)*band*.72;if(inside(x,z,.96))add(x,hy(x,z)+.08,z,.58,.68,.57,.065)}}});
+// chemins et rivière
+function road(pts,wd,col){for(let i=0;i<pts.length-1;i++){const [x0,z0]=pts[i],[x1,z1]=pts[i+1],L_=Math.hypot(x1-x0,z1-z0);
+ for(let k=0;k<L_;k+=.2){const t=k/L_,x=x0+(x1-x0)*t,z=z0+(z1-z0)*t;for(let q=0;q<3;q++){const o=(rnd()-.5)*wd,px=x-(z1-z0)/L_*o,pz=z+(x1-x0)/L_*o;if(inside(px,pz,.95))add(px,hy(px,pz)+.06,pz,col[0],col[1],col[2],.085)}}}}
+road([[C[0]-2,C[1]-6],[13,-2],[Hm[0]+4,Hm[1]+3],[Hm[0],Hm[1]+2.4]],.9,[.8,.78,.7]);
+road([[Hm[0]-1,Hm[1]+3],[-4,-5],[-7,0]],.8,[.72,.66,.55]);
+road([[Hm[0]-2,Hm[1]+2],[-1,-7],[-5,-4],[-8,-2],[-10,0]],.62,[.68,.65,.53]);
+const SXs=C[0]-6;for(let j=0;j<3;j++)road([[SXs,C[1]-4.5+j*3],[SXs+12.4,C[1]-4.5+j*3]],.7,[.8,.8,.8]);for(let i=0;i<5;i++)road([[SXs+i*3-.6,C[1]-6],[SXs+i*3-.6,C[1]+5]],.7,[.8,.8,.8]);
+let WF=RV[0];
+for(let i=0;i<RV.length-1;i++){const [x0,z0]=RV[i],[x1,z1]=RV[i+1],L_=Math.hypot(x1-x0,z1-z0);
+ for(let k=0;k<L_;k+=.2){const t=k/L_,x=x0+(x1-x0)*t,z=z0+(z1-z0)*t;if(!inside(x,z,.97))continue;WF=[x,z];
+  for(let q=0;q<3;q++){const o=(rnd()-.5)*1.3;add(x+o,hy(x,z)+.18,z,.5,.85,.95,.09)}}}
+for(let i=0;i<650;i++){const a=rnd()*6.283,r=Math.sqrt(rnd())*3.8;add(L[0]+Math.cos(a)*r,hy(L[0],L[1])+.12,L[1]+Math.sin(a)*r,.45,.82,.95,.09)}
+// petit pont de pierre au passage du ruisseau
+for(let t=-2.6;t<=2.6;t+=.14){const x=-9.8+t,z=-1+.35*t,y=hy(x,z)+.34;add(x,y,z,.62,.58,.46,.09);if(Math.abs(t)>2.1){add(x,y+.22,z-.28,.66,.62,.5,.08);add(x,y+.22,z+.28,.66,.62,.5,.08)}}
+// arbres
+function tree(x,z,s,conif,gp){const y0=hy(x,z),col=ny=>{const g=rnd()<gp,v=.55+.45*ny+rnd()*.15;return g?[.2+.3*v,.5*v+.35*rnd(),.18*v]:[.52*v,.54*v,.5*v]};
+ if(conif){const h=(2.6+rnd()*2)*s;for(let k=0;k<h;k+=.5)add(x,y0+k,z,.42,.4,.36,.09);
+  for(let i=0;i<88*DEN;i++){const t=rnd(),a=rnd()*6.283,rad=(1-t)*1.1*s,c=col(t);add(x+Math.cos(a)*rad,y0+.5+t*h,z+Math.sin(a)*rad,c[0],c[1],c[2],.14)}}
+ else{const h=(2.2+rnd()*3.2)*s,rx=(1.2+rnd()*.8)*s;for(let k=0;k<h;k+=.4)add(x+Math.sin(k)*.05,y0+k,z,.45,.42,.38,.09);
+  for(let i=0;i<105*DEN;i++){let u=rnd()*2-1,v=rnd()*2-1,w=rnd()*2-1;const m=Math.hypot(u,v,w)||1,q=Math.cbrt(rnd());u=u/m*q;v=v/m*q;w=w/m*q;
+   const c=col((v+1)/2);add(x+u*rx,y0+h+.3+v*.6*s,z+w*rx,c[0],c[1],c[2],.15)}}}
+for(let i=0;i<520;i++){const a=rnd()*6.283,r=Math.sqrt(rnd())*12,x=N[0]+Math.cos(a)*r*1.2,z=N[1]+Math.sin(a)*r*.9,y=hy(x,z);
+ if(!inside(x,z,.88)||dd(x,z,L)<4.6||dRV(x,z)<1.4||y>4.2||dd(x,z,Hm)<10||dd(x,z,C)<10||rnd()<.12)continue;tree(x,z,.75+rnd()*.7,y>2.2||rnd()<.45,.8)}
+for(let i=0;i<340;i++){const a=rnd()*6.283,r=Math.sqrt(rnd())*R,x=EX*r*Math.cos(a),z=r*Math.sin(a);
+ if(!inside(x,z,.9)||dd(x,z,L)<4.6||dd(x,z,C)<11||dd(x,z,Hm)<11||dRV(x,z)<1.4||hy(x,z)>4.2||dd(x,z,N)<12)continue;tree(x,z,.7+rnd()*.6,rnd()<.4,.6)}
+for(let r=0;r<2;r++)for(let i=0;i<6;i++)tree(Hm[0]-9+i*1.7,Hm[1]-6-r*1.8,.55,false,.9);
+for(let i=0;i<7;i++)tree(C[0]-1+rnd()*2.4,C[1]-1+rnd()*2.4,.6,rnd()<.4,.9);
+for(let i=0;i<40;i++){const a=rnd()*6.283,r=Math.sqrt(rnd())*R,x=EX*r*Math.cos(a),z=r*Math.sin(a);if(!inside(x,z,.95)||dd(x,z,C)<10||dd(x,z,Hm)<8)continue;
+ const y=hy(x,z),s=.3+rnd()*.7;for(let k=0;k<14;k++){const l=.5+rnd()*.35;add(x+(rnd()-.5)*s*2,y+rnd()*s*.8,z+(rnd()-.5)*s*1.4,l,l,l,.1)}}
+// structures
+function box(cx,cz,w,h,d,y0,lum,roof){const A=w*d,S=2*h*(w+d),n=Math.floor((A+S)*16);
+ for(let i=0;i<n;i++){let x,y,z,l;if(rnd()<A/(A+S)){x=cx+(rnd()-.5)*w;z=cz+(rnd()-.5)*d;y=y0+h;l=lum;if(roof&&rnd()<.5){add(x,y,z,GR[0],GR[1],GR[2],.09);continue}}
+  else{const f=rnd()<.5;y=y0+rnd()*h;if(f){x=cx+(rnd()<.5?-.5:.5)*w;z=cz+(rnd()-.5)*d;l=lum*.72}else{z=cz+(rnd()<.5?-.5:.5)*d;x=cx+(rnd()-.5)*w;l=lum*.92}
+   if(Math.floor(y*2.6)%2==0&&rnd()<.55){add(x,y,z,.8,1,.72,.08);continue}}
+  add(x,y,z,l*1.1,l*1.1,l*1.1,.1)}}
+function cyl(cx,cz,r,h,y0,lum){for(let i=0;i<Math.floor(h*r*60);i++){const a=rnd()*6.283;add(cx+Math.cos(a)*r,y0+rnd()*h,cz+Math.sin(a)*r,lum*(.7+.3*Math.cos(a)),lum*(.7+.3*Math.cos(a)),lum*(.7+.3*Math.cos(a)),.09)}}
+function pyr(cx,cz,w,d,y0,h,col,n){for(let i=0;i<n;i++){const t=rnd(),hw=w/2*(1-t),hd=d/2*(1-t),s=rnd()<.5?1:-1,e=rnd()*2-1;
+ if(rnd()<.5)add(cx+e*hw,y0+t*h,cz+s*hd,col[0],col[1],col[2],.1);else add(cx+s*hw,y0+t*h,cz+e*hd,col[0]*.8,col[1]*.8,col[2]*.8,.1)}}
+for(let i=0;i<5;i++)for(let j=0;j<3;j++){if((i==1&&j==0)||(i==3&&j==2))continue;const dc=Math.hypot(i-2,j-1),h=1+rnd()*1.8+Math.max(0,2.2-dc)*1.9;
+ box(C[0]-6+i*3,C[1]-3+j*3,1.8,h,1.8,FY,.62+rnd()*.33,rnd()<.4)}
+box(C[0],C[1],1.2,12,1.2,FY,.95,false);for(let k=0;k<2;k+=.25)add(C[0],FY+12+k,C[1],.9,.9,.9,.08);
+box(C[0]+6.4,C[1]+.5,1.5,7.2,1.6,FY,.82,false);box(C[0]-6.2,C[1]-.6,1.4,5.8,1.5,FY,.75,false);
+for(const [x,z,h] of [[C[0]+6.4,C[1]+.5,7.2],[C[0]-6.2,C[1]-.6,5.8]])for(let q=0;q<3;q++)add(x,FY+h+.2+q*.22,z,.6,.92,.48,.07);
+box(Hm[0],Hm[1],2.6,1.5,1.8,FY,.92,false);pyr(Hm[0],Hm[1],3,2.2,FY+1.5,1.3,[.3,.8,.28],130);box(Hm[0]+.9,Hm[1]-.4,.35,.9,.35,FY+1.5,.6,false);
+box(Hm[0]+6,Hm[1]+1,3,1.7,2.2,FY,.7,false);pyr(Hm[0]+6,Hm[1]+1,3.3,2.5,FY+1.7,1.2,[.55,.55,.55],150);cyl(Hm[0]+8.2,Hm[1]+1.4,.6,3.2,FY,.85);
+cyl(WM[0],WM[1],.5,3.8,FY,.9);
+for(let i=-6;i<=9;i+=.45){for(const zz of [Hm[1]-4,Hm[1]+4]){add(Hm[0]+i,hy(Hm[0]+i,zz)+.35,zz,.72,.7,.65,.08);add(Hm[0]+i,hy(Hm[0]+i,zz)+.6,zz,.72,.7,.65,.07)}}
+// sillons cultivés autour de la maison
+for(let row=-4;row<=4;row++){const z=Hm[1]-5+row*1.15;for(let x=Hm[0]-6;x<=Hm[0]+7;x+=.32){if(Math.hypot(x-Hm[0],z-Hm[1])<2.6||!inside(x,z,.94))continue;const y=hy(x,z)+.16,g=row%2===0;add(x,y,z,g ? .34 : .66,g ? .72 : .57,g ? .24 : .09,.09)}}
+[[N,12],[C,9.5],[Hm,9.5]].forEach(([p,rad])=>{for(let i=0;i<170;i++){const a=i/170*6.283,x=p[0]+Math.cos(a)*rad*1.15,z=p[1]+Math.sin(a)*rad*.9;if(inside(x,z,.95)&&i%6<4)add(x,hy(x,z)+.15,z,.45,1,.4,.17)}});
+// petits îlots rocheux qui ponctuent la mer autour de la grande île
+const ISLETS=Array.from({length:9},(_,i)=>({a:(i+(rnd()-.5)*.72)*6.283/9,rad:1.1+rnd()*2.1,elev:-.55+rnd()*2.2,depth:.52+rnd()*.42,gap:2+rnd()*5}));
+ISLETS.forEach(({a,rad,elev,depth,gap},id)=>{const distance=Rr(a)+rad*1.22+gap,cx=EX*distance*Math.cos(a),cz=distance*Math.sin(a),lobes=1+.12*Math.sin(a*3+id)+.1*Math.sin(a*5-id);
+ for(let i=0;i<300;i++){const ang=rnd()*6.283,q=Math.sqrt(rnd()),w=lobes+.09*Math.sin(ang*4+id)+.06*Math.sin(ang*7-id),x=cx+Math.cos(ang)*rad*q*w,z=cz+Math.sin(ang)*rad*depth*q*w,y=elev+.2+.9*(1-q*q)+.1*Math.sin(ang*3+id);
+  const rock=q>.75||y<.42;add(x,y,z,rock ? .48 : .28,rock ? .45 : .68,rock ? .36 : .24,.1+rnd()*.04)}
+ const layers=3+Math.floor(rnd()*4),fall=.24+rnd()*.1;for(let layer=0;layer<layers;layer++){const rr=rad*(.94-layer*.13),y=elev-layer*fall,n=Math.max(16,Math.round(rr*(18+rnd()*9)));for(let i=0;i<n;i++){const ang=i/n*6.283,w=lobes+.08*Math.sin(ang*3+id);add(cx+Math.cos(ang)*rr*w,y,cz+Math.sin(ang)*rr*depth*w,.38,.36,.31,.1+rnd()*.025)}}
+ if(rad>2.25){const tx=cx-rad*.16,tz=cz+rad*.08,treeTop=elev+1.05;for(let k=0;k<3;k++)add(tx,treeTop-.5+k*.22,tz,.35,.3,.24,.08);for(let i=0;i<22;i++){const ang=rnd()*6.283,q=Math.sqrt(rnd());add(tx+Math.cos(ang)*q*.55,treeTop+(rnd()-.5)*.35,tz+Math.sin(ang)*q*.42,.22,.62,.27,.1)}}
+});
+const SX=new Float32Array(PX),SY=new Float32Array(PY),SZ=new Float32Array(PZ),SR=new Uint8Array(PR),SG=new Uint8Array(PG),SB=new Uint8Array(PB),SS=new Float32Array(PS),SN=PX.length;
+let shoreMin=Infinity,shoreMax=-Infinity;for(let i=0;i<SN;i++){if(SZ[i]<shoreMin)shoreMin=SZ[i];if(SZ[i]>shoreMax)shoreMax=SZ[i]}
+const SHORE=new Float32Array(SN),shoreSpan=shoreMax-shoreMin||1;
+for(let i=0;i<SN;i++){const x=SX[i],z=SZ[i],broad=.075*Math.sin(x*.2+Math.sin(z*.13)*1.8),small=.028*Math.sin(x*.57+z*.34)+.018*Math.cos(x*.31-z*.62);SHORE[i]=Math.max(0,Math.min(1,(z-shoreMin)/shoreSpan+broad+small))}
+// Répartition stable des pixels de la carte pour la transition vers la présentation.
+// dynamique
+const DM=1000,DX=new Float32Array(DM),DY=new Float32Array(DM),DZ=new Float32Array(DM),DR=new Uint8Array(DM),DG=new Uint8Array(DM),DB=new Uint8Array(DM),DS=new Float32Array(DM);let dn=0;
+const dadd=(x,y,z,r,g,b,s)=>{DX[dn]=x;DY[dn]=y;DZ[dn]=z;DR[dn]=r;DG[dn]=g;DB[dn]=b;DS[dn]=s;dn++};
+const FF=[];for(let i=0;i<300;i++){const a=rnd()*6.283,r=Math.sqrt(rnd())*R*.9,f=i<150;FF.push([f?N[0]+Math.cos(a)*r*.5:EX*Math.cos(a)*r,rnd()*8,f?N[1]+Math.sin(a)*r*.45:Math.sin(a)*r,.3+rnd()*.7])}
+const SHEEP=[[Hm[0]-5,Hm[1]+8],[Hm[0]-2,Hm[1]+9],[Hm[0]+6,Hm[1]+8],[Hm[0]+3,Hm[1]+10],[Hm[0]+9,Hm[1]+6]],DEER=[[N[0]-4,N[1]-3],[N[0]+1,N[1]-5],[N[0]-8,N[1]+1]];
+// ---- UI
+const stage=document.getElementById('stage'),cv=document.getElementById('cv'),ctx=cv.getContext('2d'),panel=document.getElementById('panel'),projectPage=document.getElementById('project-page'),ecoProjectPage=document.getElementById('eco-project-page'),cityProjectPage=document.getElementById('city-project-page'),aboutPage=document.getElementById('about-page'),tagsEl=document.getElementById('tags'),tg={};
+const aimCursor=document.createElement('div');aimCursor.className='aim-cursor';aimCursor.setAttribute('aria-hidden','true');aimCursor.innerHTML='<i class="aim-arm top"></i><i class="aim-arm right"></i><i class="aim-arm bottom"></i><i class="aim-arm left"></i><i class="aim-cursor-dot"></i>';document.body.appendChild(aimCursor);document.documentElement.classList.add('aim-cursor-ready');let aimTarget=null;
+document.addEventListener('pointermove',e=>{if(e.pointerType==='touch'){aimCursor.classList.remove('visible');return}aimCursor.style.left=`${e.clientX}px`;aimCursor.style.top=`${e.clientY}px`;const hit=e.target instanceof Element?e.target.closest('button,a,[role="button"],summary,.logo,.tag,.directional-hover'):null;if(hit){aimCursor.classList.add('visible');if(hit!==aimTarget){aimCursor.classList.remove('is-hovering');void aimCursor.offsetWidth;aimCursor.classList.add('is-hovering')}}else aimCursor.classList.remove('visible','is-hovering','is-pressed');aimTarget=hit});
+document.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch'&&e.target instanceof Element&&e.target.closest('button,a,[role="button"],summary,.logo,.tag,.directional-hover'))aimCursor.classList.add('is-pressed')});
+document.addEventListener('pointerup',()=>aimCursor.classList.remove('is-pressed'));document.addEventListener('pointercancel',()=>aimCursor.classList.remove('is-pressed'));
+const opening=document.getElementById('opening'),openingFill=document.getElementById('opening-fill'),openingPercent=document.getElementById('opening-percent'),openingStart=performance.now(),OPENING_DURATION=2700;let openingReleased=false,openingHidden=false;
+for(const k in ZONES){const z=ZONES[k],b=document.createElement('button');b.className='tag';
+ b.innerHTML=`<b class="tag-copy">:: SECTEUR IDENTIFIÉ</b><br><span class="tag-name tag-copy">${z.tag}</span><br><span class="tag-info tag-copy">${z.gps} · ${z.projects.length} PROJETS</span>`;b.setAttribute('aria-label',`${z.tag} · ${z.gps} · ${z.projects.length} projets`);b.onclick=()=>go(k);tagsEl.appendChild(b);tg[k]=b}
+const PI=Math.PI,cam={az:0,el:.46,D:100,tx:0,ty:0,tz:0},goal={az:0,el:.56,D:100,tx:0,ty:0,tz:0};let cur=null,dragAz=0,t=0,sceneFrame=0;
+function openPanel(o,delay,zoneKey){setTimeout(()=>{if(cur!==o)return;
+ const sectorName=o.projects?o.title.replace(/^La /,'').toLocaleUpperCase('fr-FR'):'';
+ panel.classList.toggle('home-panel',zoneKey==='home');
+ const it=o.projects?`<div class="experience"><div class="experience-meta"><span>SECTEUR · ${sectorName}</span><span id="experience-count">0 / ${o.projects.length}</span></div><div class="experience-track" role="progressbar" aria-label="Progression dans ce secteur" aria-valuemin="0" aria-valuemax="${o.projects.length}" aria-valuenow="0"><span id="experience-fill"></span></div></div><div class="grid${zoneKey==='home'?' home-wheel':''}">${zoneKey==='home'?'<div class="home-wheel-center"><span>SÉLECTION</span><b>MAISON</b><span>03 PROJETS</span></div>':''}${o.projects.map((p,i)=>{
+  const id=`${zoneKey}-${i}`,opened=openedProjects.has(id),featured=zoneKey==='nature'&&i===0;
+  const ecoFeatured=zoneKey==='nature'&&i===1,edenFeatured=zoneKey==='city'&&i===0;
+  const title=featured?'Hôtel à Cigales':ecoFeatured?'Habitat circulaire':edenFeatured?'Eden Project':p.t,description=featured?'Un hôtel à pontes pour faire découvrir la faune locale, au cœur du village.':ecoFeatured?'Un refuge pour le canard de Barbarie au milieu des rizières.':edenFeatured?'Une exploration critique entre régénération, tourisme et mise en scène du vivant.':p.d;
+  const image=featured?'<img class="project-card-image" src="./Portfolio%20Carte%20Assets/hotel-cigales/in-situ.webp" alt="Photomontage de l’Hôtel à Cigales" loading="lazy">':ecoFeatured?'<img class="project-card-image" src="./Portfolio%20Carte%20Assets/ecodesign/habitat-vue-large.png" alt="Refuge pour canards dans une rizière" loading="lazy">':edenFeatured?'<img class="project-card-image" src="./Portfolio%20Carte%20Assets/eden-project/eden-project-biomes.jpeg" alt="Dômes de l’Eden Project" loading="lazy">':'image du projet';
+  return `<article class="card project-card${opened?' opened':''}" data-project="${id}" role="button" tabindex="0" aria-expanded="${opened}"><div class="img">${image}</div><h3>${title}</h3><p>${description}</p><div class="project-action">${opened?'✓ PROJET DÉCOUVERT':featured?'↗ EXPLORER LE PROJET':'↳ OUVRIR LE PROJET'}</div></article>`
+ }).join('')}</div>`:'';
+ panel.innerHTML=`<button id="back">← CARTE</button><h2>${o.title}</h2><p class="d">${o.desc}</p>${it}`;
+ document.getElementById('back').onclick=()=>go('map');
+ document.getElementById('project-back').onclick=()=>{panel.classList.remove('project-opening');projectPage.classList.remove('on');projectPage.setAttribute('aria-hidden','true');projectPage.inert=true;panel.classList.add('on')};
+ document.getElementById('eco-project-back').onclick=()=>{panel.classList.remove('project-opening');ecoProjectPage.classList.remove('on');ecoProjectPage.setAttribute('aria-hidden','true');ecoProjectPage.inert=true;panel.classList.add('on')};
+ document.getElementById('city-project-back').onclick=()=>{panel.classList.remove('project-opening');cityProjectPage.classList.remove('on');cityProjectPage.setAttribute('aria-hidden','true');cityProjectPage.inert=true;panel.classList.add('on')};
+ const updateExperience=()=>{const n=openedProjects.size,globalCount=document.getElementById('global-exp-count'),globalFill=document.getElementById('global-exp-fill'),globalTrack=globalFill?.parentElement;if(globalCount)globalCount.textContent=`${n} / ${projectTotal} PROJETS`;if(globalFill)globalFill.style.width=`${n/projectTotal*100}%`;if(globalTrack)globalTrack.setAttribute('aria-valuenow',n);const count=document.getElementById('experience-count'),fill=document.getElementById('experience-fill'),track=fill?.parentElement;if(!fill||!track)return;const local=[...openedProjects].filter(id=>id.startsWith(`${zoneKey}-`)).length;count.textContent=`${local} / ${o.projects.length} OUVERTS`;fill.style.width=`${local/o.projects.length*100}%`;track.setAttribute('aria-valuenow',local)};
+ const revealProjectImages=page=>{
+  const images=[...page.querySelectorAll('.project-hero>img,.project-page-content img')],reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  page._projectImageObserver?.disconnect();
+  images.forEach(image=>image.classList.remove('is-visible'));
+  images.forEach(image=>image.classList.add('project-media-fade'));
+  if(reducedMotion||!('IntersectionObserver' in window)){images.forEach(image=>image.classList.add('is-visible'));return}
+  const observer=new IntersectionObserver(entries=>{for(const entry of entries){if(!entry.isIntersecting)continue;entry.target.classList.add('is-visible');observer.unobserve(entry.target)}},{root:page,rootMargin:'0px 0px -7% 0px',threshold:.06});
+  page._projectImageObserver=observer;
+  images.forEach(image=>{const group=image.closest('.project-visual-grid,.project-maquette-grid,.project-brand,.project-resources')||image.parentElement;const siblings=[...group.querySelectorAll('img')];image.style.transitionDelay=`${Math.min(Math.max(siblings.indexOf(image),0),2)*75}ms`;observer.observe(image)});
+ };
+ const revealProject=page=>{
+  page.classList.remove('project-reveal-in');page.scrollTop=0;page.classList.add('on');page.setAttribute('aria-hidden','false');page.inert=false;revealProjectImages(page);
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  page.classList.add('project-reveal-in');setTimeout(()=>page.classList.remove('project-reveal-in'),760);
+ };
+ const openProject=card=>{
+  const id=card.dataset.project;
+  if(!openedProjects.has(id)){openedProjects.add(id);card.classList.add('opened');card.setAttribute('aria-expanded','true');card.querySelector('.project-action').textContent='✓ PROJET DÉCOUVERT';updateExperience()}
+  if(id==='nature-0'){panel.classList.add('project-opening');panel.classList.remove('on');revealProject(projectPage)}
+  if(id==='nature-1'){panel.classList.add('project-opening');panel.classList.remove('on');revealProject(ecoProjectPage)}
+  if(id==='city-0'){panel.classList.add('project-opening');panel.classList.remove('on');revealProject(cityProjectPage)}
+ };
+ panel.querySelectorAll('.project-card').forEach(card=>{card.onclick=()=>openProject(card);card.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openProject(card)}}});updateExperience();panel.classList.add('on')},delay)}
+function showAboutPage(){panel.classList.remove('project-opening','on');cur=null;aboutPage.scrollIntoView({behavior:'smooth',block:'start'})}
+function go(k){panel.classList.remove('project-opening');panel.classList.remove('on');projectPage.classList.remove('on');projectPage.setAttribute('aria-hidden','true');projectPage.inert=true;ecoProjectPage.classList.remove('on');ecoProjectPage.setAttribute('aria-hidden','true');ecoProjectPage.inert=true;cityProjectPage.classList.remove('on');cityProjectPage.setAttribute('aria-hidden','true');cityProjectPage.inert=true;
+ if(k==='map'){cur=null;window.scrollTo({top:0,behavior:'auto'});return}
+ if(k==='about'){showAboutPage();return}
+ window.scrollTo({top:0,behavior:'auto'});
+ const o=ZONES[k]||PAGES[k];cur=o;
+ if(ZONES[k]){const p=ZONES[k].pos,wide=stage.clientWidth>700,house=k==='home';cam.az-=2*PI*Math.floor(cam.az/(2*PI));Object.assign(goal,{az:0,el:house?1.38:.46,D:house?48:64,tx:p[0]+(house?0:wide?7:0),ty:hy(p[0],p[1])+1,tz:p[1]-(house?0:wide?0:3)});openPanel(o,900,k)}
+ else openPanel(o,100)}
+const siteMenu=document.getElementById('site-menu'),menuToggle=document.getElementById('menu-toggle'),menuToggleText=menuToggle.querySelector('.menu-toggle-text'),projectsMenuToggle=document.getElementById('projects-menu-toggle'),projectsSubnav=document.getElementById('projects-subnav');
+const directionalMenuButtons='#menu-toggle, .site-menu-close, .site-menu-link, .menu-project-subnav button';
+document.addEventListener('pointerover',event=>{if(event.pointerType!=='mouse')return;const button=event.target.closest(directionalMenuButtons);if(!button||button.contains(event.relatedTarget))return;const rect=button.getBoundingClientRect(),x=event.clientX-rect.left,y=event.clientY-rect.top,distances=[['left',x],['right',rect.width-x],['top',y],['bottom',rect.height-y]];distances.sort((a,b)=>a[1]-b[1]);button.dataset.enter=distances[0][0];button.classList.add('directional-hover');requestAnimationFrame(()=>button.classList.add('is-hovered'))});
+document.addEventListener('pointerout',event=>{if(event.pointerType!=='mouse')return;const button=event.target.closest(directionalMenuButtons);if(button&&!button.contains(event.relatedTarget))button.classList.remove('is-hovered')});
+function prepareResolvingText(word,label,row=0){word.setAttribute('aria-label',label);word.textContent='';for(let i=0;i<label.length;i++){const character=document.createElement('span'),drift=((i%5)-2)*19,echo=((i%4)-1.5)*12;character.className=`menu-letter${label[i]===' '?' menu-letter-space':''}`;character.textContent=label[i];character.dataset.letter=label[i];character.style.setProperty('--menu-delay',`${row*105+i*15}ms`);character.style.setProperty('--drift-start',`${drift}px`);character.style.setProperty('--drift-mid',`${-Math.round(drift*.28)}px`);character.style.setProperty('--echo-start',`${echo}px`);character.style.setProperty('--echo-mid',`${-Math.round(echo*.4)}px`);word.append(character)}}
+for(const word of siteMenu.querySelectorAll('.menu-word'))prepareResolvingText(word,word.dataset.label,Number(word.dataset.row)||0);
+for(const word of tagsEl.querySelectorAll('.tag-copy'))prepareResolvingText(word,word.textContent,word.classList.contains('tag-name')?1:word.classList.contains('tag-info')?2:0);
+document.addEventListener('pointerover',event=>{if(event.pointerType!=='mouse')return;const tag=event.target.closest('.tag');if(tag&&!tag.contains(event.relatedTarget))tag.classList.add('is-resolving')});
+document.addEventListener('pointerout',event=>{if(event.pointerType!=='mouse')return;const tag=event.target.closest('.tag');if(tag&&!tag.contains(event.relatedTarget))tag.classList.remove('is-resolving')});
+function setMenuOpen(open){siteMenu.classList.toggle('open',open);siteMenu.setAttribute('aria-hidden',String(!open));siteMenu.inert=!open;menuToggle.setAttribute('aria-expanded',String(open));menuToggleText.textContent=open?'FERMER':'MENU';if(!open){siteMenu.classList.remove('projects-expanded');projectsMenuToggle.setAttribute('aria-expanded','false');projectsSubnav.setAttribute('aria-hidden','true');projectsSubnav.inert=true}}
+function navigateFromMenu(destination){setMenuOpen(false);setTimeout(()=>go(destination),320)}
+menuToggle.onclick=()=>setMenuOpen(!siteMenu.classList.contains('open'));document.getElementById('menu-close').onclick=()=>setMenuOpen(false);document.getElementById('about-back').onclick=()=>go('map');siteMenu.addEventListener('click',event=>{if(event.target===siteMenu)setMenuOpen(false)});
+projectsMenuToggle.onclick=()=>{const expanded=projectsMenuToggle.getAttribute('aria-expanded')!=='true';projectsMenuToggle.setAttribute('aria-expanded',String(expanded));projectsSubnav.setAttribute('aria-hidden',String(!expanded));projectsSubnav.inert=!expanded;siteMenu.classList.toggle('projects-expanded',expanded)};
+siteMenu.querySelectorAll('[data-menu-go]').forEach(button=>button.onclick=()=>navigateFromMenu(button.dataset.menuGo));document.getElementById('logo').onclick=()=>{setMenuOpen(false);go('map')};
+addEventListener('keydown',e=>{if(e.key==='Escape'){if(siteMenu.classList.contains('open'))setMenuOpen(false);else go('map')}});
+function canScrollMap(){const bounds=stage.getBoundingClientRect();return openingHidden&&!document.hidden&&!siteMenu.classList.contains('open')&&!projectPage.classList.contains('on')&&!ecoProjectPage.classList.contains('on')&&!cityProjectPage.classList.contains('on')&&bounds.bottom>0&&bounds.top<innerHeight}
+
+let W,H,img,buf,zb,dpr=1,F=1;
+function resize(){const w=stage.clientWidth,h=stage.clientHeight;dpr=Math.min(devicePixelRatio||1,w<700?1.25:1.5);W=cv.width=Math.floor(w*dpr);H=cv.height=Math.floor(h*dpr);
+ img=ctx.createImageData(W,H);buf=new Uint32Array(img.data.buffer);zb=new Float32Array(W*H);
+ F=100*Math.min(w*(w<700?.0128:.0112),h*.019)*dpr}
+addEventListener('resize',resize);resize();
+
+let ca,sa,ce,se;
+function proj(x,y,z,o){const dx=x-cam.tx,dy=y-cam.ty,dz=z-cam.tz,x1=dx*ca-dz*sa,z1=dx*sa+dz*ca;
+ o.dep=cam.D+z1*ce-dy*se;const k=F/o.dep;o.x=W/2+x1*k;o.y=H*.52-(dy*ce+z1*se)*k;o.k=k}
+const pp={};
+function draw(X,Y,Z,CR,CG,CB,S,n,G,limit){const D=cam.D,cx=W/2,cy=H*.52,terrain=X===SX,now=performance.now(),radius=50*dpr,radius2=radius*radius;
+ for(let i=0;i<n;i++){if(G&&G[i]>limit)continue;const dx=X[i]-cam.tx,dy=Y[i]-cam.ty,dz=Z[i]-cam.tz,x1=dx*ca-dz*sa,z1=dx*sa+dz*ca,dep=D+z1*ce-dy*se;if(dep<8)continue;
+  const k=F/dep;let sx=(cx+x1*k)|0,sy=(cy-(dy*ce+z1*se)*k)|0;
+  if(terrain&&bumpPulses.length){let pushX=0,pushY=0;for(const pulse of bumpPulses){const age=(now-pulse.time)*.001,rx=sx-pulse.x,ry=sy-pulse.y,d2=rx*rx+ry*ry;if(age<0||age>1.15||d2>radius2||d2<1)continue;
+    const dist=Math.sqrt(d2),phase=(age-dist/320)/.9;if(phase<=0||phase>=1)continue;const ux=rx/dist,uy=ry/dist,ring=dist/radius,push=3.2*dpr*Math.sin(Math.PI*ring)*Math.sin(Math.PI*phase),swirl=Math.sin(pulse.time*.0027)*.18;pushX+=(ux-uy*swirl)*push;pushY+=(uy+ux*swirl)*push}
+   const magnitude=Math.hypot(pushX,pushY),limit=3.7*dpr;if(magnitude>limit){pushX*=limit/magnitude;pushY*=limit/magnitude}
+   sx=Math.round(sx+pushX);sy=Math.round(sy+pushY)}
+  if(sx<-4||sy<-4||sx>=W||sy>=H)continue;
+  let sz=Math.round(S[i]*k*1.1);sz=sz<1?1:sz>7?7:sz;
+  const f=Math.max(.35,1.2-(dep-(D-R))/(2*R)*.65),r=Math.min(255,CR[i]*f)|0,g=Math.min(255,CG[i]*f)|0,b=Math.min(255,CB[i]*f)|0,col=(255<<24)|(b<<16)|(g<<8)|r,h0=sz>>1;
+  for(let yy=sy-h0;yy<sy-h0+sz;yy++){if(yy<0||yy>=H)continue;for(let xx=sx-h0;xx<sx-h0+sz;xx++){if(xx<0||xx>=W)continue;const ix=yy*W+xx;if(dep<zb[ix]){zb[ix]=dep;buf[ix]=col}}}}}
+
+// interactions
+let dn0=null,moved=0,bumpTrail=null,dragAxis=null,pointerKind='mouse';const bumpPulses=[];
+cv.addEventListener('pointerdown',e=>{dn0=[e.clientX,e.clientY];moved=0;dragAxis=null;pointerKind=e.pointerType;cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointermove',e=>{
+ if(e.pointerType==='mouse'&&!cur&&!dn0){const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)*dpr,y=(e.clientY-r.top)*dpr,now=performance.now();
+  if(!bumpTrail||Math.hypot(x-bumpTrail.x,y-bumpTrail.y)>23&&now-bumpTrail.time>42){bumpPulses.push({x,y,time:now});if(bumpPulses.length>8)bumpPulses.shift();bumpTrail={x,y,time:now}}
+ }
+ if(!dn0)return;const dx=e.clientX-dn0[0],dy=e.clientY-dn0[1];dn0=[e.clientX,e.clientY];if(pointerKind==='touch'&&canScrollMap()){if(!dragAxis&&Math.hypot(dx,dy)>5)dragAxis=Math.abs(dy)>Math.abs(dx)*1.15?'vertical':'horizontal';if(dragAxis==='vertical'){moved+=Math.abs(dy);window.scrollBy({top:-dy,behavior:'auto'})}else{moved+=Math.abs(dx);if(!cur)dragAz-=dx*.006}}else{moved+=Math.abs(dx);if(!cur)dragAz-=dx*.006}
+});
+cv.addEventListener('pointerleave',()=>{bumpTrail=null});
+cv.addEventListener('pointerup',e=>{dn0=null;if(moved>6||cur)return;
+ const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)*dpr,py=(e.clientY-r.top)*dpr;let best=null,bd=130*dpr;
+ for(const k in ZONES){const p=ZONES[k].pos;proj(p[0],hy(p[0],p[1])+1.5,p[1],pp);const d=Math.hypot(pp.x-px,pp.y-py);if(d<bd){bd=d;best=k}}if(best)go(best)});
+
+function islandIsCovered(){const bounds=stage.getBoundingClientRect();return document.hidden||siteMenu.classList.contains('open')||projectPage.classList.contains('on')||ecoProjectPage.classList.contains('on')||cityProjectPage.classList.contains('on')||bounds.bottom<=0||bounds.top>=innerHeight}
+function wakeScene(){if(!islandIsCovered()&&!sceneFrame)sceneFrame=requestAnimationFrame(loop)}
+function loop(){sceneFrame=0;if(islandIsCovered())return;t+=.016;
+ const now=performance.now();while(bumpPulses.length&&now-bumpPulses[0].time>1200)bumpPulses.shift();
+ const openingRaw=Math.min(1,(now-openingStart)/OPENING_DURATION),islandReveal=openingRaw*openingRaw*(3-2*openingRaw);
+ openingFill.style.width=`${openingRaw*100}%`;openingPercent.textContent=`${Math.round(openingRaw*100)}%`;
+ if(openingRaw>.72&&!openingReleased){openingReleased=true;opening.classList.add('release')}
+ if(openingRaw>=1&&!openingHidden){openingHidden=true;opening.classList.add('done')}
+ if(!cur&&Math.abs(dragAz)>60){dragAz%=2*PI;cam.az-=2*PI*Math.floor(cam.az/(2*PI))}
+ if(!cur||!ZONES[Object.keys(ZONES).find(k=>ZONES[k]===cur)||'x']){Object.assign(goal,{az:dragAz+Math.sin(t*.12)*.2,el:stage.clientWidth<700?.9:.46,D:100,tx:0,ty:stage.clientWidth<700?-2:-5,tz:0})}
+ for(const k in goal)cam[k]+=(goal[k]-cam[k])*.06;
+ ca=Math.cos(cam.az);sa=Math.sin(cam.az);ce=Math.cos(cam.el);se=Math.sin(cam.el);
+ buf.fill(0x00000000);zb.fill(1e9);
+ // dynamique
+ dn=0;
+ FF.forEach((f,i)=>{const y=(f[1]+t*f[3]*.9)%9;dadd(f[0]+Math.sin(t*.7+i)*.4,hy(f[0],f[2])+y+.5,f[2]+Math.cos(t*.6+i)*.4,170,255,130,.1)});
+ for(let i=0;i<8;i++){const a=t*.45+i*.8,c=Math.cos(a),sn=Math.sin(a),x=C[0]+7.2*Math.sign(c)*Math.pow(Math.abs(c),.4),z=C[1]-.7+4.6*Math.sign(sn)*Math.pow(Math.abs(sn),.4);
+  dadd(x,FY+.15,z,120,255,110,.12);dadd(x+.2,FY+.15,z,120,255,110,.1)}
+ for(let i=0;i<10;i++){const a=t*.4+i*.62,r=7+i%3*1.8,x=N[0]+Math.cos(a)*r*1.4,z=N[1]+Math.sin(a)*r,y=9+Math.sin(t+i)*.8,fl=Math.sin(t*10+i)*.35;
+  dadd(x,y,z,255,255,255,.12);dadd(x+Math.sin(a)*.4,y+fl,z-Math.cos(a)*.4,255,255,255,.1);dadd(x-Math.sin(a)*.4,y+fl,z+Math.cos(a)*.4,255,255,255,.1)}
+ SHEEP.forEach((p,i)=>{const x=p[0]+Math.sin(t*.2+i*2)*1.5,z=p[1]+Math.cos(t*.17+i)*1;dadd(x,hy(x,z)+.25,z,255,255,250,.2);dadd(x+.25,hy(x,z)+.3,z,235,235,230,.15)});
+ DEER.forEach((p,i)=>{const x=p[0]+Math.sin(t*.15+i*3)*2.5,z=p[1]+Math.cos(t*.12+i)*2,y=hy(x,z);for(let k=0;k<3;k++)dadd(x,y+.3+k*.22,z,215,170,110,.14)});
+ const out=Math.hypot(WF[0]/EX,WF[1])||1,fallX=WF[0]+WF[0]/EX/out*2.5,fallZ=WF[1]+WF[1]/out*2.5,fallBase=hy(WF[0],WF[1])-13.5;
+ for(let i=0;i<100;i++){const u=(t*.62+i/100)%1,a=Math.sin(t*2+i*1.7)*.22,spread=.08+u*.34,x=WF[0]+WF[0]/EX/out*u*u*2.5+(i%5-2)*.08+a,y=hy(WF[0],WF[1])+.22-u*13.5,z=WF[1]+WF[1]/out*u*u*2.5;
+  dadd(x,y,z,(.72-.28*u)*255,(.9-.22*u)*255,255,.1+u*.1);dadd(x+WF[1]/out*spread,y+a,z-WF[0]/EX/out*spread,210,245,255,.08);dadd(x-WF[1]/out*spread,y-a,z+WF[0]/EX/out*spread,255,255,255,.07)}
+ for(let i=0;i<32;i++){const a=t*1.1+i*2.4,r=.35+(i%8)*.13,bounce=.25+.9*Math.abs(Math.sin(t*4.5+i));dadd(fallX+Math.cos(a)*r,fallBase+bounce,fallZ+Math.sin(a)*r,145,225,255,.07+(i%3)*.02)}
+ for(let b=0;b<4;b++){const a=t*1.2+b*Math.PI/2;for(let k=.4;k<2.4;k+=.25)dadd(WM[0]+Math.cos(a)*k,FY+3.8+Math.sin(a)*k,WM[1]-.5,240,240,240,.09)}
+ for(let i=0;i<18;i++){const u=(t*.3+i/18)%1,v=190*(1-u)+40;dadd(Hm[0]+.9+u*2+Math.sin(i)*.15,FY+2.6+u*4,Hm[1]-.4,v,v,v,.1+u*.2)}
+ draw(SX,SY,SZ,SR,SG,SB,SS,SN,SHORE,islandReveal);draw(DX,DY,DZ,DR,DG,DB,DS,Math.floor(dn*islandReveal));
+ ctx.putImageData(img,0,0);
+ for(const k in ZONES){const p=ZONES[k].pos;proj(p[0],hy(p[0],p[1])+(k==='city'?10.5:k==='nature'?8:4.5),p[1],pp);
+  const delay=Object.keys(ZONES).indexOf(k)*130,rawTag=Math.max(0,Math.min(1,(performance.now()-openingStart-OPENING_DURATION-delay)/480)),tagProgress=rawTag*rawTag*(3-2*rawTag);
+  const pinY=pp.y/dpr,tagHeight=tg[k].offsetHeight;let stem=34*tagProgress;
+  if(pinY-tagHeight-stem<68){const labelY=Math.max(pinY+10,68);stem=pinY>=68?Math.max(0,labelY-pinY):0;tg[k].classList.add('label-below');tg[k].style.transform=`translate(${pp.x/dpr}px,${labelY}px)`}
+  else{tg[k].classList.remove('label-below');tg[k].style.transform=`translate(${pp.x/dpr}px,${pinY}px) translate(0,calc(-100% - ${stem}px))`}
+  tg[k].style.setProperty('--tag-stem-height',`${stem}px`);
+  tg[k].style.opacity=cur?0:tagProgress;tg[k].style.pointerEvents=!cur&&rawTag>=1?'auto':'none'}
+ sceneFrame=requestAnimationFrame(loop)}
+const sceneVisibilityObserver=new MutationObserver(wakeScene);[siteMenu,projectPage,ecoProjectPage,cityProjectPage].forEach(element=>sceneVisibilityObserver.observe(element,{attributes:true,attributeFilter:['class']}));document.addEventListener('visibilitychange',wakeScene);addEventListener('scroll',wakeScene,{passive:true});
+sceneFrame=requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
